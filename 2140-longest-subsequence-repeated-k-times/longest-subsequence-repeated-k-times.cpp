@@ -1,15 +1,13 @@
 class Solution {
 public:
     string longestSubsequenceRepeatedK(string s, int k) {
-        auto check = [&](const string& t, int k) -> bool {
+        auto check = [&](const string& t, int k) {
             int i = 0;
             for (char c : s) {
                 if (c == t[i]) {
                     i++;
                     if (i == t.size()) {
-                        if (--k == 0) {
-                            return true;
-                        }
+                        if (--k == 0) return true;
                         i = 0;
                     }
                 }
@@ -17,31 +15,25 @@ public:
             return false;
         };
         int cnt[26] = {};
-        for (char c : s) {
-            cnt[c - 'a']++;
+        for (char c : s) cnt[c - 'a']++;
+        string cs;
+        for (int i = 0; i < 26; i++) {
+            if (cnt[i] >= k) cs += char('a' + i);
         }
-
-        vector<char> cs;
-        for (char c = 'a'; c <= 'z'; ++c) {
-            if (cnt[c - 'a'] >= k) {
-                cs.push_back(c);
-            }
-        }
-
         queue<string> q;
         q.push("");
-        string ans;
+        string res;
         while (!q.empty()) {
             string cur = q.front();
             q.pop();
             for (char c : cs) {
-                string nxt = cur + c;
-                if (check(nxt, k)) {
-                    ans = nxt;
-                    q.push(nxt);
+                string next = cur + c;
+                if (check(next, k)) {
+                    res = next;
+                    q.push(next);
                 }
             }
         }
-        return ans;
+        return res;
     }
 };
