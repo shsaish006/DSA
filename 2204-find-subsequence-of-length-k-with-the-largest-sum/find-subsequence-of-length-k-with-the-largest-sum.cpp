@@ -1,17 +1,25 @@
-#include <ranges>
+#include <vector>
+#include <algorithm>
+
+using namespace std;
 
 class Solution {
 public:
-    vector<int> maxSubsequence(vector<int>& nums, int k) {
-        int n = nums.size();
-        vector<int> idx(n);
-        ranges::iota(idx, 0);
-        ranges::sort(idx, [&](int i, int j) { return nums[i] < nums[j]; });
-        ranges::sort(idx | views::drop(n - k));
-        vector<int> ans(k);
-        for (int i = n - k; i < n; ++i) {
-            ans[i - (n - k)] = nums[idx[i]];
+    vector<int> maxSubsequence(vector<int>& a, int b) {
+        int c = a.size();
+        vector<pair<int, int>> d;
+        for (int e = 0; e < c; ++e) {
+            d.push_back({a[e], e});
         }
-        return ans;
+        sort(d.begin(), d.end(), greater<pair<int, int>>());
+        vector<pair<int, int>> f(d.begin(), d.begin() + b);
+        sort(f.begin(), f.end(), [](auto& g, auto& h) {
+            return g.second < h.second;
+        });
+        vector<int> i;
+        for (auto& j : f) {
+            i.push_back(j.first);
+        }
+        return i;
     }
 };
