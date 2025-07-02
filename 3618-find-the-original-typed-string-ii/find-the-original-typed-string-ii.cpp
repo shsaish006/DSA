@@ -1,3 +1,39 @@
+// class Solution {
+// public:
+//     int possibleStringCount(string word, int k) {
+//         const int MOD = 1e9 + 7;
+//         vector<int> groups;
+//         int cnt = 1;
+
+//         for (int i = 1; i < word.size(); i++) {
+//             if (word[i] == word[i - 1]) {
+//                 cnt++;
+//             } else {
+//                 groups.push_back(cnt);
+//                 cnt = 1;
+//             }
+//         }
+//         groups.push_back(cnt);
+
+//         long long result = 1;
+//         for (int g : groups) {
+//             result = result * g % MOD;
+//         }
+
+//         vector<int> choices;
+//         for (int g : groups) {
+//             if (g > 1) choices.push_back(g - 1);
+//         }
+
+//         sort(choices.rbegin(), choices.rend());
+
+//         for (int i = 0; i < min(k, (int)choices.size()); i++) {
+//             result = (result - choices[i] + MOD) % MOD;
+//         }
+
+//         return result;
+//     }
+// };
 class Solution {
 public:
     int possibleStringCount(string word, int k) {
