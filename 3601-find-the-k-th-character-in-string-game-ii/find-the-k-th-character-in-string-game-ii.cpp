@@ -1,3 +1,23 @@
+// class Solution {
+// public:
+//     char kthCharacter(long long k, vector<int>& operations) {
+//         return helper(k, operations, operations.size(), 0);
+//     }
+
+// private:
+//     char helper(long long k, const vector<int>& ops, int level, int accShift) {
+//         if (level == 0) {
+//             return 'a' + (accShift % 26);
+//         }
+
+//         long long half = 1LL << (level - 1);
+//         if (k <= half) {
+//             return helper(k, ops, level - 1, accShift);
+//         } else {
+//             return helper(k - half, ops, level - 1, accShift + ops[level - 1]);
+//         }
+//     }
+// };
 class Solution {
 public:
     char kthCharacter(long long k, vector<int>& operations) {
