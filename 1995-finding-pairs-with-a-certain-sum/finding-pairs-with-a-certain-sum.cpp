@@ -1,33 +1,45 @@
+#include <vector>
+#include <unordered_map>
+using namespace std;
+
 class FindSumPairs {
 public:
-    FindSumPairs(vector<int>& nums1, vector<int>& nums2) {
-        this->nums1 = nums1;
-        this->nums2 = nums2;
-        for (int x : nums2) {
-            ++cnt[x];
-        }
+    FindSumPairs(vector<int>& nums1, vector<int>& nums2)
+        : nums1(nums1), nums2(nums2) {
+        buildFrequencyMap();
     }
 
     void add(int index, int val) {
-        --cnt[nums2[index]];
+        int oldVal = nums2[index];
+        freqMap[oldVal]--;
+
         nums2[index] += val;
-        ++cnt[nums2[index]];
+
+        freqMap[nums2[index]]++;
     }
 
     int count(int tot) {
-        int ans = 0;
+        int result = 0;
         for (int x : nums1) {
-            ans += cnt[tot - x];
+            int complement = tot - x;
+            if (freqMap.count(complement)) {
+                result += freqMap[complement];
+            }
         }
-        return ans;
+        return result;
     }
 
 private:
     vector<int> nums1;
     vector<int> nums2;
-    unordered_map<int, int> cnt;
-};
+    unordered_map<int, int> freqMap;
 
+    void buildFrequencyMap() {
+        for (int num : nums2) {
+            freqMap[num]++;
+        }
+    }
+};
 
 /**
  * Your FindSumPairs object will be instantiated and called as such:
