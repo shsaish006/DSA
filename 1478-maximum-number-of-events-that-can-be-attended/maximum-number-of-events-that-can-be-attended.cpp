@@ -1,28 +1,28 @@
 class Solution {
 public:
     int maxEvents(vector<vector<int>>& events) {
-        unordered_map<int, vector<int>> g;
-        int l = INT_MAX, r = 0;
-        for (auto& event : events) {
-            int s = event[0], e = event[1];
-            g[s].push_back(e);
-            l = min(l, s);
-            r = max(r, e);
-        }
-        priority_queue<int, vector<int>, greater<int>> pq;
+        sort(events.begin(), events.end(), [](const vector<int>& a, const vector<int>& b) {
+            return a[1] < b[1];
+        });
+
+        set<int> availableDays;
+        int maxDay = 0;
+        for (const auto& e : events)
+            maxDay = max(maxDay, e[1]);
+        
+        for (int d = 1; d <= maxDay; ++d)
+            availableDays.insert(d);
+
         int ans = 0;
-        for (int s = l; s <= r; ++s) {
-            while (!pq.empty() && pq.top() < s) {
-                pq.pop();
-            }
-            for (int e : g[s]) {
-                pq.push(e);
-            }
-            if (!pq.empty()) {
-                pq.pop();
+        for (const auto& e : events) {
+            int start = e[0], end = e[1];
+            auto it = availableDays.lower_bound(start);
+            if (it != availableDays.end() && *it <= end) {
+                availableDays.erase(it);
                 ++ans;
             }
         }
+
         return ans;
     }
 };
