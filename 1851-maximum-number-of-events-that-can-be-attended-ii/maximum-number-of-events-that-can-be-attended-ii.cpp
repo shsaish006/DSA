@@ -1,29 +1,22 @@
 class Solution {
 public:
     int maxValue(vector<vector<int>>& events, int k) {
-        ranges::sort(events);
+        sort(events.begin(), events.end());
         int n = events.size();
-        int f[n][k + 1];
-        memset(f, 0, sizeof(f));
-        auto dfs = [&](this auto&& dfs, int i, int k) -> int {
-            if (i >= n || k <= 0) {
-                return 0;
+        vector<vector<int>> dp(n + 1, vector<int>(k + 1, 0));
+
+        vector<int> startTimes(n);
+        for (int i = 0; i < n; ++i) {
+            startTimes[i] = events[i][0];
+        }
+
+        for (int i = n - 1; i >= 0; --i) {
+            int nextIdx = upper_bound(startTimes.begin(), startTimes.end(), events[i][1]) - startTimes.begin();
+            for (int j = 1; j <= k; ++j) {
+                dp[i][j] = max(dp[i + 1][j], events[i][2] + dp[nextIdx][j - 1]);
             }
-            if (f[i][k] > 0) {
-                return f[i][k];
-            }
+        }
 
-            int ed = events[i][1], val = events[i][2];
-            vector<int> t = {ed};
-
-            int p = upper_bound(events.begin() + i + 1, events.end(), t,
-                        [](const auto& a, const auto& b) { return a[0] < b[0]; })
-                - events.begin();
-
-            f[i][k] = max(dfs(i + 1, k), dfs(p, k - 1) + val);
-            return f[i][k];
-        };
-
-        return dfs(0, k);
+        return dp[0][k];
     }
 };
