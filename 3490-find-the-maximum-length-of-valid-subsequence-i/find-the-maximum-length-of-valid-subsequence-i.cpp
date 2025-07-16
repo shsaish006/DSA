@@ -2,17 +2,19 @@ class Solution {
 public:
     int maximumLength(vector<int>& nums) {
         int k = 2;
-        int f[k][k];
-        memset(f, 0, sizeof(f));
-        int ans = 0;
-        for (int x : nums) {
-            x %= k;
-            for (int j = 0; j < k; ++j) {
-                int y = (j - x + k) % k;
-                f[x][y] = f[y][x] + 1;
-                ans = max(ans, f[x][y]);
+        int dp[2][2] = {};
+        int maxLen = 0;
+
+        for (int num : nums) {
+            int rem = num % k;
+
+            for (int prevRem = 0; prevRem < k; ++prevRem) {
+                int expectedPrev = (prevRem - rem + k) % k;
+                dp[rem][expectedPrev] = dp[expectedPrev][rem] + 1;
+                maxLen = max(maxLen, dp[rem][expectedPrev]);
             }
         }
-        return ans;
+
+        return maxLen;
     }
 };
