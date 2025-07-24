@@ -8,25 +8,24 @@ public:
             g[a].push_back(b);
             g[b].push_back(a);
         }
-        int s = 0, s1 = 0;
-        int ans = INT_MAX;
+        int s = 0, s1 = 0, ans = INT_MAX;
         for (int x : nums) {
             s ^= x;
         }
-        auto dfs = [&](this auto&& dfs, int i, int fa) -> int {
+        auto dfs = [&](auto&& dfs, int i, int fa) -> int {
             int res = nums[i];
             for (int j : g[i]) {
                 if (j != fa) {
-                    res ^= dfs(j, i);
+                    res ^= dfs(dfs, j, i);
                 }
             }
             return res;
         };
-        auto dfs2 = [&](this auto&& dfs2, int i, int fa) -> int {
+        auto dfs2 = [&](auto&& dfs2, int i, int fa) -> int {
             int res = nums[i];
             for (int j : g[i]) {
                 if (j != fa) {
-                    int s2 = dfs2(j, i);
+                    int s2 = dfs2(dfs2, j, i);
                     res ^= s2;
                     int mx = max({s ^ s1, s2, s1 ^ s2});
                     int mn = min({s ^ s1, s2, s1 ^ s2});
@@ -37,8 +36,8 @@ public:
         };
         for (int i = 0; i < n; ++i) {
             for (int j : g[i]) {
-                s1 = dfs(i, j);
-                dfs2(i, j);
+                s1 = dfs(dfs, i, j);
+                dfs2(dfs2, i, j);
             }
         }
         return ans;
