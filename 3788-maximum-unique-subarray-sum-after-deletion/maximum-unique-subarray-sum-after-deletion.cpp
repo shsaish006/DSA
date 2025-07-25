@@ -1,20 +1,20 @@
 class Solution {
 public:
-    int maxSum(vector<int>& nums) {
-        int mx = ranges::max(nums);
-        if (mx <= 0) {
-            return mx;
+    int maxSum(std::vector<int>& nums) {
+        int maxElement = *std::max_element(nums.begin(), nums.end());
+        if (maxElement <= 0) {
+            return maxElement;
         }
-        unordered_set<int> s;
-        int ans = 0;
-        for (int x : nums) {
-            if (x < 0 || s.contains(x)) {
-                continue;
+
+        std::unordered_set<int> seen;
+        int sum = 0;
+
+        for (int num : nums) {
+            if (num > 0 && seen.insert(num).second) {
+                sum += num;
             }
-            ans += x;
-            s.insert(x);
         }
-        return ans;
+
+        return sum;
     }
-    
 };
