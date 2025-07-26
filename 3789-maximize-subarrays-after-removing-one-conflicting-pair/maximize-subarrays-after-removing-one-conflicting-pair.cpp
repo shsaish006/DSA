@@ -1,47 +1,54 @@
 class Solution {
 public:
-    long long maxSubarrays(int n, vector<vector<int>>& conflictingPairs) {
-        vector<int> bMin1(n + 2, INT_MAX), bMin2(n + 2, INT_MAX);
-
-        // Step 1 & 2: Normalize and fill bMin1 and bMin2
-        for (auto& pair : conflictingPairs) {
-            int a = min(pair[0], pair[1]);
-            int b = max(pair[0], pair[1]);
-            if (b < bMin1[a]) {
-                bMin2[a] = bMin1[a];
-                bMin1[a] = b;
-            } else if (b < bMin2[a]) {
-                bMin2[a] = b;
-            }
+    long long maxSubarrays(int n, std::vector<std::vector<int>>& p) {
+        std::vector<std::vector<std::pair<int, int>>> a(n + 1);
+        for (int i = 0; i < p.size(); ++i) {
+            int b = std::min(p[i][0], p[i][1]);
+            int c = std::max(p[i][0], p[i][1]);
+            a[b].push_back({c - 1, i});
         }
 
-        // Step 3–4: Traverse in reverse and calculate valid subarrays + potential gain
-        long long res = 0;
-        int ib1 = n;
-        int b2 = INT_MAX;
-        vector<long long> delCount(n + 2, 0);
+        std::vector<int> d(n + 1), e(n + 1), f(n + 1), g(n + 1);
+        std::multiset<std::pair<int, int>> h;
+        long long x = 0;
 
         for (int i = n; i >= 1; --i) {
-            if (bMin1[ib1] > bMin1[i]) {
-                b2 = min(b2, bMin1[ib1]);
-                ib1 = i;
+            for (auto& j : a[i]) h.insert(j);
+
+            if (h.empty()) {
+                d[i] = n;
+                f[i] = -1;
+                e[i] = n;
+                g[i] = -1;
             } else {
-                b2 = min(b2, bMin1[i]);
+                d[i] = h.begin()->first;
+                f[i] = h.begin()->second;
+
+                if (h.size() >= 2) {
+                    auto it = h.begin();
+                    std::advance(it, 1);
+                    e[i] = it->first;
+                    g[i] = it->second;
+                } else {
+                    e[i] = n;
+                    g[i] = -1;
+                }
             }
-
-            int end = min(bMin1[ib1], n + 1);
-            res += end - i;
-
-            int recoverable = min({b2, bMin2[ib1], n + 1}) - min(bMin1[ib1], n + 1);
-            delCount[ib1] += recoverable;
+            x += d[i];
         }
 
-        // Step 5: Best gain by removing one conflict
-        long long maxGain = 0;
+        long long y = x - 1LL * n * (n + 1) / 2 + n;
+        std::vector<long long> z(p.size(), 0);
+
         for (int i = 1; i <= n; ++i) {
-            maxGain = max(maxGain, delCount[i]);
+            if (f[i] != -1) {
+                z[f[i]] += (e[i] - d[i]);
+            }
         }
 
-        return res + maxGain;
+        long long r = 0;
+        for (long long i : z) r = std::max(r, i);
+        return y + r;
     }
 };
+
