@@ -1,15 +1,32 @@
 class Solution {
 public:
     int maxTotalFruits(vector<vector<int>>& fruits, int startPos, int k) {
-        int ans = 0, s = 0;
-        for (int i = 0, j = 0; j < fruits.size(); ++j) {
-            int pj = fruits[j][0], fj = fruits[j][1];
-            s += fj;
-            while (i <= j && pj - fruits[i][0] + min(abs(startPos - fruits[i][0]), abs(startPos - pj)) > k) {
-                s -= fruits[i++][1];
-            }
-            ans = max(ans, s);
+        int n = fruits.size();
+        vector<int> positions, prefixSum(n + 1, 0);
+
+        for (int i = 0; i < n; ++i) {
+            positions.push_back(fruits[i][0]);
+            prefixSum[i + 1] = prefixSum[i] + fruits[i][1];
         }
-        return ans;
+
+        int res = 0;
+
+        for (int x = 0; x <= k; ++x) {
+            int left = startPos - x;
+            int right = startPos + max(0, k - 2 * x);
+            int i = lower_bound(positions.begin(), positions.end(), left) - positions.begin();
+            int j = upper_bound(positions.begin(), positions.end(), right) - positions.begin();
+            res = max(res, prefixSum[j] - prefixSum[i]);
+        }
+
+        for (int x = 0; x <= k; ++x) {
+            int right = startPos + x;
+            int left = startPos - max(0, k - 2 * x);
+            int i = lower_bound(positions.begin(), positions.end(), left) - positions.begin();
+            int j = upper_bound(positions.begin(), positions.end(), right) - positions.begin();
+            res = max(res, prefixSum[j] - prefixSum[i]);
+        }
+
+        return res;
     }
 };
