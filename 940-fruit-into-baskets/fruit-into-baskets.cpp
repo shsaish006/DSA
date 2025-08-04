@@ -3,19 +3,18 @@ public:
     int totalFruit(vector<int>& fruits) {
         unordered_map<int, int> cnt;
         int ans = 0;
-        for (int i = 0, j = 0; i < fruits.size(); ++i) {
-            int x = fruits[i];
-            ++cnt[x];
+        int j = 0;
+        for (int i = 0; i < fruits.size(); ++i) {
+            ++cnt[fruits[i]];
             while (cnt.size() > 2) {
-                int y = fruits[j++];
-                if (--cnt[y] == 0) {
-                    cnt.erase(y);
+                if (--cnt[fruits[j]] == 0) {
+                    cnt.erase(fruits[j]);
                 }
+                ++j;
             }
             ans = max(ans, i - j + 1);
         }
         return ans;
+        
     }
-
-    
 };
