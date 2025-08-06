@@ -1,72 +1,77 @@
 class SegmentTree {
-public:
-    vector<int> nums, tr;
+private:
+    vector<int> tree;
+    vector<int> data;
+    int n;
 
-    SegmentTree(vector<int>& nums) {
-        this->nums = nums;
-        int n = nums.size();
-        tr.resize(n * 4);
+    void build(int node, int start, int end) {
+        if (start == end) {
+            tree[node] = data[start - 1]; // 1-based to 0-based adjustment
+        } else {
+            int mid = (start + end) / 2;
+            build(2 * node, start, mid);
+            build(2 * node + 1, mid + 1, end);
+            tree[node] = max(tree[2 * node], tree[2 * node + 1]);
+        }
+    }
+
+    void update(int node, int start, int end, int index, int value) {
+        if (start == end) {
+            tree[node] = value;
+        } else {
+            int mid = (start + end) / 2;
+            if (index <= mid)
+                update(2 * node, start, mid, index, value);
+            else
+                update(2 * node + 1, mid + 1, end, index, value);
+            tree[node] = max(tree[2 * node], tree[2 * node + 1]);
+        }
+    }
+
+    int findFirstFit(int node, int start, int end, int required) {
+        if (tree[node] < required) return -1;
+        if (start == end) return start;
+
+        int mid = (start + end) / 2;
+        if (tree[2 * node] >= required)
+            return findFirstFit(2 * node, start, mid, required);
+        else
+            return findFirstFit(2 * node + 1, mid + 1, end, required);
+    }
+
+public:
+    SegmentTree(const vector<int>& input) {
+        data = input;
+        n = input.size();
+        tree.resize(4 * n);
         build(1, 1, n);
     }
 
-    void build(int u, int l, int r) {
-        if (l == r) {
-            tr[u] = nums[l - 1];
-            return;
-        }
-        int mid = (l + r) >> 1;
-        build(u * 2, l, mid);
-        build(u * 2 + 1, mid + 1, r);
-        pushup(u);
+    int query(int required) {
+        return findFirstFit(1, 1, n, required);
     }
 
-    void modify(int u, int l, int r, int i, int v) {
-        if (l == r) {
-            tr[u] = v;
-            return;
-        }
-        int mid = (l + r) >> 1;
-        if (i <= mid) {
-            modify(u * 2, l, mid, i, v);
-        } else {
-            modify(u * 2 + 1, mid + 1, r, i, v);
-        }
-        pushup(u);
-    }
-
-    int query(int u, int l, int r, int v) {
-        if (tr[u] < v) {
-            return -1;
-        }
-        if (l == r) {
-            return l;
-        }
-        int mid = (l + r) >> 1;
-        if (tr[u * 2] >= v) {
-            return query(u * 2, l, mid, v);
-        }
-        return query(u * 2 + 1, mid + 1, r, v);
-    }
-
-    void pushup(int u) {
-        tr[u] = max(tr[u * 2], tr[u * 2 + 1]);
+    void modify(int index, int value) {
+        update(1, 1, n, index, value);
     }
 };
 
 class Solution {
 public:
     int numOfUnplacedFruits(vector<int>& fruits, vector<int>& baskets) {
-        SegmentTree tree(baskets);
+        SegmentTree segTree(baskets);
         int n = baskets.size();
-        int ans = 0;
-        for (int x : fruits) {
-            int i = tree.query(1, 1, n, x);
-            if (i < 0) {
-                ans++;
+        int unplaced = 0;
+
+        for (int fruit : fruits) {
+            int index = segTree.query(fruit);
+            if (index == -1) {
+                unplaced++;
             } else {
-                tree.modify(1, 1, n, i, 0);
+                segTree.modify(index, 0); // Mark basket as used
             }
         }
-        return ans;
+
+        return unplaced;
     }
 };
