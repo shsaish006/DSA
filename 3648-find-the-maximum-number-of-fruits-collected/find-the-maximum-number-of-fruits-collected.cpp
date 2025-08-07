@@ -1,35 +1,32 @@
 class Solution {
 public:
-    int maxCollectedFruits(vector<vector<int>>& fruits) {
-        int n = fruits.size();
-        const int inf = 1 << 29;
-        vector<vector<int>> f(n, vector<int>(n, -inf));
+    int maxCollectedFruits(vector<vector<int>>& grid) {
+        int n = grid.size();
+        const int INF = -(1 << 29);
+        vector<vector<int>> dp(n, vector<int>(n, INF));
 
-        f[0][n - 1] = fruits[0][n - 1];
-        for (int i = 1; i < n; i++) {
-            for (int j = i + 1; j < n; j++) {
-                f[i][j] = max(f[i - 1][j], f[i - 1][j - 1]) + fruits[i][j];
-                if (j + 1 < n) {
-                    f[i][j] = max(f[i][j], f[i - 1][j + 1] + fruits[i][j]);
-                }
+        dp[0][n - 1] = grid[0][n - 1];
+
+        for (int r = 1; r < n; ++r) {
+            for (int c = r + 1; c < n; ++c) {
+                int val = max(dp[r - 1][c], dp[r - 1][c - 1]);
+                if (c + 1 < n) val = max(val, dp[r - 1][c + 1]);
+                dp[r][c] = val + grid[r][c];
             }
         }
 
-        f[n - 1][0] = fruits[n - 1][0];
-        for (int j = 1; j < n; j++) {
-            for (int i = j + 1; i < n; i++) {
-                f[i][j] = max(f[i][j - 1], f[i - 1][j - 1]) + fruits[i][j];
-                if (i + 1 < n) {
-                    f[i][j] = max(f[i][j], f[i + 1][j - 1] + fruits[i][j]);
-                }
+        dp[n - 1][0] = grid[n - 1][0];
+
+        for (int c = 1; c < n; ++c) {
+            for (int r = c + 1; r < n; ++r) {
+                int val = max(dp[r][c - 1], dp[r - 1][c - 1]);
+                if (r + 1 < n) val = max(val, dp[r + 1][c - 1]);
+                dp[r][c] = val + grid[r][c];
             }
         }
 
-        int ans = f[n - 2][n - 1] + f[n - 1][n - 2];
-        for (int i = 0; i < n; i++) {
-            ans += fruits[i][i];
-        }
-
-        return ans;
+        int res = dp[n - 2][n - 1] + dp[n - 1][n - 2];
+        for (int i = 0; i < n; ++i) res += grid[i][i];
+        return res;
     }
 };
