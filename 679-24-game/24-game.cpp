@@ -1,57 +1,35 @@
+#include <bits/stdc++.h>
+using namespace std;
+
 class Solution {
 public:
-    bool judgePoint24(vector<int>& cards) {
-        vector<double> nums;
-        for (int num : cards) {
-            nums.push_back(static_cast<double>(num));
-        }
-        return dfs(nums);
+    bool judgePoint24(vector<int>& a) {
+        vector<double> b;
+        for (int c : a) b.push_back((double)c);
+        return f(b);
     }
 
 private:
-    const char ops[4] = {'+', '-', '*', '/'};
-bool dfs(vector<double>& nums) {
-        int n = nums.size();
-        if (n == 1) {
-            return abs(nums[0] - 24) < 1e-6;
-        }
-        bool ok = false;
-        for (int i = 0; i < n; ++i) {
-            for (int j = 0; j < n; ++j) {
-                if (i != j) {
-                    vector<double> nxt;
-                    for (int k = 0; k < n; ++k) {
-                        if (k != i && k != j) {
-                            nxt.push_back(nums[k]);
-                        }
-                    }
-                    for (char op : ops) {
-                        switch (op) {
-                        case '/':
-                            if (nums[j] == 0) {
-                                continue;
-                            }
-                            nxt.push_back(nums[i] / nums[j]);
-                            break;
-                        case '*':
-                            nxt.push_back(nums[i] * nums[j]);
-                            break;
-                        case '+':
-                            nxt.push_back(nums[i] + nums[j]);
-                            break;
-                        case '-':
-                            nxt.push_back(nums[i] - nums[j]);
-                            break;
-                        }
-                        ok |= dfs(nxt);
-                        if (ok) {
-                            return true;
-                        }
-                        nxt.pop_back();
-                    }
+    bool f(vector<double>& a) {
+        int b = a.size();
+        if (b == 1) return fabs(a[0] - 24) < 1e-6;
+        for (int c = 0; c < b; c++) {
+            for (int d = 0; d < b; d++) {
+                if (c == d) continue;
+                vector<double> e;
+                for (int g = 0; g < b; g++) 
+                    if (g != c && g != d) e.push_back(a[g]);
+                for (int h = 0; h < 4; h++) {
+                    if (h == 0) e.push_back(a[c] + a[d]);
+                    else if (h == 1) e.push_back(a[c] - a[d]);
+                    else if (h == 2) e.push_back(a[c] * a[d]);
+                    else if (h == 3 && a[d] != 0) e.push_back(a[c] / a[d]);
+                    else continue;
+                    if (f(e)) return true;
+                    e.pop_back();
                 }
             }
         }
-        return ok;
+        return false;
     }
 };
