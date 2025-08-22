@@ -2,17 +2,26 @@ class Solution {
 public:
     int minimumArea(vector<vector<int>>& grid) {
         int m = grid.size(), n = grid[0].size();
-        int x1 = m, y1 = n;
-        int x2 = 0, y2 = 0;
-        for (int i = 0; i < m; ++i) {
-            for (int j = 0; j < n; ++j) {
+        int top = m, bottom = -1, left = n, right = -1;
+
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
                 if (grid[i][j] == 1) {
-                    x1 = min(x1, i);
-                    y1 = min(y1, j);
-                    x2 = max(x2, i);
-                    y2 = max(y2, j);
+                    top = min(top, i);
+                    bottom = max(bottom, i);
                 }
             }
         }
-        return (x2 - x1 + 1) * (y2 - y1 + 1);
-    }};
+
+        for (int j = 0; j < n; j++) {
+            for (int i = 0; i < m; i++) {
+                if (grid[i][j] == 1) {
+                    left = min(left, j);
+                    right = max(right, j);
+                }
+            }
+        }
+
+        return (bottom - top + 1) * (right - left + 1);
+    }
+};
