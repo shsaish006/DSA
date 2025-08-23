@@ -1,47 +1,51 @@
+#include <bits/stdc++.h>
+using namespace std;
+
 class Solution {
 public:
     int minimumSum(vector<vector<int>>& grid) {
-        int m = grid.size();
-        int n = grid[0].size();
-        int ans = m * n;
-        int inf = INT_MAX / 4;
-        auto f = [&](int i1, int j1, int i2, int j2) {
-            int x1 = inf, y1 = inf;
-            int x2 = -inf, y2 = -inf;
-            for (int i = i1; i <= i2; i++) {
-                for (int j = j1; j <= j2; j++) {
-                    if (grid[i][j] == 1) {
-                        x1 = min(x1, i);
-                        y1 = min(y1, j);
-                        x2 = max(x2, i);
-                        y2 = max(y2, j);
+        int m = grid.size(), n = grid[0].size();
+        int inf = 1e9, ans = m * n;
+
+        auto rect = [&](int x1, int y1, int x2, int y2) {
+            int r1 = m, c1 = n, r2 = -1, c2 = -1;
+            for (int i = x1; i <= x2; i++) {
+                for (int j = y1; j <= y2; j++) {
+                    if (grid[i][j]) {
+                        r1 = min(r1, i);
+                        c1 = min(c1, j);
+                        r2 = max(r2, i);
+                        c2 = max(c2, j);
                     }
                 }
             }
-            return x1 > x2 || y1 > y2 ? inf : (x2 - x1 + 1) * (y2 - y1 + 1);
+            if (r2 == -1) return inf;
+            return (r2 - r1 + 1) * (c2 - c1 + 1);
         };
 
-        for (int i1 = 0; i1 < m - 1; i1++) {
-            for (int i2 = i1 + 1; i2 < m - 1; i2++) {
-                ans = min(ans, f(0, 0, i1, n - 1) + f(i1 + 1, 0, i2, n - 1) + f(i2 + 1, 0, m - 1, n - 1));
+        // horizontal 3-partition
+        for (int a = 0; a < m - 2; a++) {
+            for (int b = a + 1; b < m - 1; b++) {
+                ans = min(ans, rect(0, 0, a, n - 1) + rect(a + 1, 0, b, n - 1) + rect(b + 1, 0, m - 1, n - 1));
             }
         }
 
-        for (int j1 = 0; j1 < n - 1; j1++) {
-            for (int j2 = j1 + 1; j2 < n - 1; j2++) {
-                ans = min(ans, f(0, 0, m - 1, j1) + f(0, j1 + 1, m - 1, j2) + f(0, j2 + 1, m - 1, n - 1));
+        // vertical 3-partition
+        for (int a = 0; a < n - 2; a++) {
+            for (int b = a + 1; b < n - 1; b++) {
+                ans = min(ans, rect(0, 0, m - 1, a) + rect(0, a + 1, m - 1, b) + rect(0, b + 1, m - 1, n - 1));
             }
         }
 
+        // L-shaped partitions
         for (int i = 0; i < m - 1; i++) {
             for (int j = 0; j < n - 1; j++) {
-                ans = min(ans, f(0, 0, i, j) + f(0, j + 1, i, n - 1) + f(i + 1, 0, m - 1, n - 1));
-                ans = min(ans, f(0, 0, i, n - 1) + f(i + 1, 0, m - 1, j) + f(i + 1, j + 1, m - 1, n - 1));
-                ans = min(ans, f(0, 0, i, j) + f(i + 1, 0, m - 1, j) + f(0, j + 1, m - 1, n - 1));
-                ans = min(ans, f(0, 0, m - 1, j) + f(0, j + 1, i, n - 1) + f(i + 1, j + 1, m - 1, n - 1));
+                ans = min(ans, rect(0, 0, i, j) + rect(0, j + 1, i, n - 1) + rect(i + 1, 0, m - 1, n - 1));
+                ans = min(ans, rect(0, 0, i, n - 1) + rect(i + 1, 0, m - 1, j) + rect(i + 1, j + 1, m - 1, n - 1));
+                ans = min(ans, rect(0, 0, i, j) + rect(i + 1, 0, m - 1, j) + rect(0, j + 1, m - 1, n - 1));
+                ans = min(ans, rect(0, 0, m - 1, j) + rect(0, j + 1, i, n - 1) + rect(i + 1, j + 1, m - 1, n - 1));
             }
         }
 
         return ans;
-    }
-};
+    }};
