@@ -1,17 +1,13 @@
 class Solution {
 public:
     int areaOfMaxDiagonal(vector<vector<int>>& dimensions) {
-        int ans = 0, mx = 0;
+        pair<int, int> best = {0, 0};
         for (auto& d : dimensions) {
             int l = d[0], w = d[1];
-            int t = l * l + w * w;
-            if (mx < t) {
-                mx = t;
-                ans = l * w;
-            } else if (mx == t) {
-                ans = max(ans, l * w);
-            }
+            int diag2 = l * l + w * w;
+            int area = l * w;
+            best = max(best, {diag2, area});
         }
-        return ans;
+        return best.second;
     }
 };
