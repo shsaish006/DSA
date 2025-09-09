@@ -17,8 +17,5 @@ public:
             }
         }
         long long ans = 0;
-        for (int i = 0; i <= n; i++) {
-            ans += d[i];
-        }
-        return ans % mod;
-    }};
+        for (int i = 0; i <= n; i++) ans = (ans + d[i]) % mod;
+        return ans;}};
