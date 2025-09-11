@@ -1,20 +1,11 @@
 class Solution {
 public:
     string sortVowels(string s) {
-        string vs;
-        for (auto c : s) {
-            char d = tolower(c);
-            if (d == 'a' || d == 'e' || d == 'i' || d == 'o' || d == 'u') {
-                vs.push_back(c);
-            }
-        }
-        ranges::sort(vs);
-        for (int i = 0, j = 0; i < s.size(); ++i) {
-            char d = tolower(s[i]);
-            if (d == 'a' || d == 'e' || d == 'i' || d == 'o' || d == 'u') {
-                s[i] = vs[j++];
-            }
-        }
+        vector<char> v;
+        for (char c : s) if (string("aeiouAEIOU").find(c) != string::npos) v.push_back(c);
+        sort(v.begin(), v.end());
+        int j = 0;
+        for (char &c : s) if (string("aeiouAEIOU").find(c) != string::npos) c = v[j++];
         return s;
     }
 };
