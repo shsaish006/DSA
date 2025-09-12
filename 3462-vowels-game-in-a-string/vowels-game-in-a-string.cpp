@@ -1,11 +1,8 @@
 class Solution {
 public:
     bool doesAliceWin(string s) {
-        string vowels = "aeiou";
         for (char c : s) {
-            if (vowels.find(c) != string::npos) {
-                return true;
-            }
+            if (c=='a'||c=='e'||c=='i'||c=='o'||c=='u') return true;
         }
         return false;
     }
