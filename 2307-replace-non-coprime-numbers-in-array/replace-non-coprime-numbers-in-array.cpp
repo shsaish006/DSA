@@ -1,20 +1,14 @@
 class Solution {
 public:
     vector<int> replaceNonCoprimes(vector<int>& nums) {
-        vector<int> stk;
+        vector<int> st;
         for (int x : nums) {
-            stk.push_back(x);
-            while (stk.size() > 1) {
-                x = stk.back();
-                int y = stk[stk.size() - 2];
-                int g = __gcd(x, y);
-                if (g == 1) {
-                    break;
-                }
-                stk.pop_back();
-                stk.back() = 1LL * x * y / g;
+            while (!st.empty()) {
+                int g = gcd(st.back(), x);
+                if (g == 1) break;
+                x = 1LL * x * st.back() / g;
+                st.pop_back();
             }
+            st.push_back(x);
         }
-        return stk;
-    }
-};
+        return st;}};
