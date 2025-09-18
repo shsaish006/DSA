@@ -1,43 +1,36 @@
 class TaskManager {
-private:
-    unordered_map<int, pair<int, int>> d;
-    set<pair<int, int>> st;
+    unordered_map<int, pair<int,int>> d;
+    priority_queue<tuple<int,int,int>> pq;
 
 public:
     TaskManager(vector<vector<int>>& tasks) {
-        for (const auto& task : tasks) {
-            add(task[0], task[1], task[2]);
-        }
+        for (auto &t : tasks) add(t[0], t[1], t[2]);
     }
 
-    void add(int userId, int taskId, int priority) {
-        d[taskId] = {userId, priority};
-        st.insert({-priority, -taskId});
+    void add(int u, int id, int p) {
+        d[id] = {u,p};
+        pq.push({p,id,u});
     }
 
-    void edit(int taskId, int newPriority) {
-        auto [userId, priority] = d[taskId];
-        st.erase({-priority, -taskId});
-        st.insert({-newPriority, -taskId});
-        d[taskId] = {userId, newPriority};
+    void edit(int id, int p) {
+        auto [u,old] = d[id];
+        d[id] = {u,p};
+        pq.push({p,id,u});
     }
 
-    void rmv(int taskId) {
-        auto [userId, priority] = d[taskId];
-        st.erase({-priority, -taskId});
-        d.erase(taskId);
+    void rmv(int id) {
+        d.erase(id);
     }
 
     int execTop() {
-        if (st.empty()) {
-            return -1;
+        while (!pq.empty()) {
+            auto [p,id,u] = pq.top();
+            if (!d.count(id) || d[id].second != p) { pq.pop(); continue; }
+            pq.pop();
+            d.erase(id);
+            return u;
         }
-        auto e = *st.begin();
-        st.erase(st.begin());
-        int taskId = -e.second;
-        int userId = d[taskId].first;
-        d.erase(taskId);
-        return userId;
+        return -1;
     }
 };
 
