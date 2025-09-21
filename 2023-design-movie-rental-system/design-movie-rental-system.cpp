@@ -1,61 +1,54 @@
 class MovieRentingSystem {
-private:
-    unordered_map<int, set<pair<int, int>>> available; 
-    unordered_map<long long, int> priceMap;
-    set<tuple<int, int, int>> rented; 
+    unordered_map<int, set<pair<int,int>>> avail;
+    unordered_map<long long,int> mp;
+    set<tuple<int,int,int>> rented;
 
-    long long f(int shop, int movie) {
-        return ((long long) shop << 30) | movie;
+    long long key(int s,int m) {
+        return ((long long)s<<30)|m;
     }
 
 public:
-    MovieRentingSystem(int n, vector<vector<int>>& entries) {
-        for (auto& e : entries) {
-            int shop = e[0], movie = e[1], price = e[2];
-            available[movie].insert({price, shop});
-            priceMap[f(shop, movie)] = price;
+    MovieRentingSystem(int n, vector<vector<int>>& e) {
+        for (auto& x:e) {
+            avail[x[1]].insert({x[2],x[0]});
+            mp[key(x[0],x[1])] = x[2];
         }
     }
 
-    vector<int> search(int movie) {
-        vector<int> res;
-        if (!available.count(movie)) {
-            return res;
+    vector<int> search(int m) {
+        vector<int> r;
+        if (!avail.count(m)) return r;
+        int c=0;
+        for (auto& [p,s]:avail[m]) {
+            r.push_back(s);
+            if (++c==5) break;
         }
-        int cnt = 0;
-        for (auto& [price, shop] : available[movie]) {
-            res.push_back(shop);
-            if (++cnt == 5) {
-                break;
-            }
-        }
-        return res;
+        return r;
     }
 
-    void rent(int shop, int movie) {
-        int price = priceMap[f(shop, movie)];
-        available[movie].erase({price, shop});
-        rented.insert({price, shop, movie});
+    void rent(int s,int m) {
+        int p=mp[key(s,m)];
+        avail[m].erase({p,s});
+        rented.insert({p,s,m});
     }
 
-    void drop(int shop, int movie) {
-        int price = priceMap[f(shop, movie)];
-        rented.erase({price, shop, movie});
-        available[movie].insert({price, shop});
+    void drop(int s,int m) {
+        int p=mp[key(s,m)];
+        rented.erase({p,s,m});
+        avail[m].insert({p,s});
     }
 
     vector<vector<int>> report() {
-        vector<vector<int>> res;
-        int cnt = 0;
-        for (auto& [price, shop, movie] : rented) {
-            res.push_back({shop, movie});
-            if (++cnt == 5) {
-                break;
-            }
+        vector<vector<int>> r;
+        int c=0;
+        for (auto& [p,s,m]:rented) {
+            r.push_back({s,m});
+            if (++c==5) break;
         }
-        return res;
+        return r;
     }
 };
+
 /**
  * Your MovieRentingSystem object will be instantiated and called as such:
  * MovieRentingSystem* obj = new MovieRentingSystem(n, entries);
