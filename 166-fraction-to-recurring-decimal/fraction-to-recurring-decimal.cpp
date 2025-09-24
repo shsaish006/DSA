@@ -1,33 +1,26 @@
 class Solution {
 public:
     string fractionToDecimal(int numerator, int denominator) {
-        if (numerator == 0) {
-            return "0";
-        }
-        string ans;
-        bool neg = (numerator > 0) ^ (denominator > 0);
-        if (neg) {
-            ans += "-";
-        }
-        long long a = abs(1LL * numerator), b = abs(1LL * denominator);
-        ans += to_string(a / b);
+        if (!numerator) return "0";
+        string res;
+        if ((numerator < 0) ^ (denominator < 0)) res += "-";
+        long long a = llabs((long long)numerator), b = llabs((long long)denominator);
+        res += to_string(a / b);
         a %= b;
-        if (a == 0) {
-            return ans;
-        }
-        ans += ".";
-        unordered_map<long long, int> d;
+        if (!a) return res;
+        res += ".";
+        unordered_map<long long,int> mp;
         while (a) {
-            d[a] = ans.size();
-            a *= 10;
-            ans += to_string(a / b);
-            a %= b;
-            if (d.contains(a)) {
-                ans.insert(d[a], "(");
-                ans += ")";
+            if (mp.count(a)) {
+                res.insert(mp[a], "(");
+                res += ")";
                 break;
             }
+            mp[a] = res.size();
+            a *= 10;
+            res += to_string(a / b);
+            a %= b;
         }
-        return ans;
+        return res;
     }
 };
