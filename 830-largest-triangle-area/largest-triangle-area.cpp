@@ -1,20 +1,18 @@
+#include <bits/stdc++.h>
+using namespace std;
+
 class Solution {
 public:
-    double largestTriangleArea(vector<vector<int>>& points) {
-        double ans = 0;
-        for (auto& p1 : points) {
-            int x1 = p1[0], y1 = p1[1];
-            for (auto& p2 : points) {
-                int x2 = p2[0], y2 = p2[1];
-                for (auto& p3 : points) {
-                    int x3 = p3[0], y3 = p3[1];
-                    int u1 = x2 - x1, v1 = y2 - y1;
-                    int u2 = x3 - x1, v2 = y3 - y1;
-                    double t = abs(u1 * v2 - u2 * v1) / 2.0;
-                    ans = max(ans, t);
+    double largestTriangleArea(vector<vector<int>>& a) {
+        double b = 0;
+        int n = a.size();
+        for (int i = 0; i < n; i++) {
+            for (int j = i + 1; j < n; j++) {
+                for (int k = j + 1; k < n; k++) {
+                    double c = abs((a[j][0] - a[i][0]) * (a[k][1] - a[i][1]) - (a[k][0] - a[i][0]) * (a[j][1] - a[i][1])) / 2.0;
+                    b = max(b, c);
                 }
             }
         }
-        return ans;
-    }
-};
+        return b;
+    }};
