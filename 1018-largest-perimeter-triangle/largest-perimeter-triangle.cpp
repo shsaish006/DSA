@@ -1,11 +1,10 @@
 class Solution {
 public:
     int largestPerimeter(vector<int>& nums) {
-        ranges::sort(nums);
-        for (int i = nums.size() - 1; i > 1; --i) {
-            int c = nums[i - 1] + nums[i - 2];
-            if (c > nums[i]) {
-                return c + nums[i];
+        sort(nums.begin(), nums.end());
+        for (int i = nums.size() - 1; i >= 2; --i) {
+            if (nums[i] < nums[i - 1] + nums[i - 2]) {
+                return nums[i] + nums[i - 1] + nums[i - 2];
             }
         }
         return 0;
