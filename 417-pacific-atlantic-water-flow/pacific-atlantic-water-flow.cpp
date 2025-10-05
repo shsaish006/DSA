@@ -1,48 +1,24 @@
 class Solution {
 public:
-    vector<vector<int>> pacificAtlantic(vector<vector<int>>& heights) {
-        int m = heights.size(), n = heights[0].size();
-        vector<vector<bool>> vis1(m, vector<bool>(n, false)), vis2(m, vector<bool>(n, false));
-        queue<pair<int, int>> q1, q2;
-        vector<int> dirs = {-1, 0, 1, 0, -1};
-
-        for (int i = 0; i < m; ++i) {
-            q1.emplace(i, 0);
-            vis1[i][0] = true;
-            q2.emplace(i, n - 1);
-            vis2[i][n - 1] = true;
-        }
-        for (int j = 0; j < n; ++j) {
-            q1.emplace(0, j);
-            vis1[0][j] = true;
-            q2.emplace(m - 1, j);
-            vis2[m - 1][j] = true;
-        }
-
-        auto bfs = [&](queue<pair<int, int>>& q, vector<vector<bool>>& vis) {
-            while (!q.empty()) {
-                auto [x, y] = q.front();
-                q.pop();
-                for (int k = 0; k < 4; ++k) {
-                    int nx = x + dirs[k], ny = y + dirs[k + 1];
-                    if (nx >= 0 && nx < m && ny >= 0 && ny < n
-                        && !vis[nx][ny]
-                        && heights[nx][ny] >= heights[x][y]) {
-                        vis[nx][ny] = true;
-                        q.emplace(nx, ny);
-                    }
-                }
+    vector<vector<int>> pacificAtlantic(vector<vector<int>>& h) {
+        int m = h.size(), n = h[0].size();
+        vector<vector<int>> ans;
+        vector<vector<int>> v1(m, vector<int>(n)), v2(m, vector<int>(n));
+        int d[5] = {-1, 0, 1, 0, -1};
+        function<void(int,int,vector<vector<int>>&)> dfs = [&](int x, int y, vector<vector<int>>& v){
+            v[x][y] = 1;
+            for(int k=0;k<4;k++){
+                int nx=x+d[k], ny=y+d[k+1];
+                if(nx>=0 && ny>=0 && nx<m && ny<n && !v[nx][ny] && h[nx][ny]>=h[x][y])
+                    dfs(nx,ny,v);
             }
         };
-
-        bfs(q1, vis1);
-        bfs(q2, vis2);
-
-        vector<vector<int>> ans;
-        for (int i = 0; i < m; ++i)
-            for (int j = 0; j < n; ++j)
-                if (vis1[i][j] && vis2[i][j])
-                    ans.push_back({i, j});
+        for(int i=0;i<m;i++) dfs(i,0,v1), dfs(i,n-1,v2);
+        for(int j=0;j<n;j++) dfs(0,j,v1), dfs(m-1,j,v2);
+        for(int i=0;i<m;i++)
+            for(int j=0;j<n;j++)
+                if(v1[i][j] && v2[i][j])
+                    ans.push_back({i,j});
         return ans;
     }
 };
