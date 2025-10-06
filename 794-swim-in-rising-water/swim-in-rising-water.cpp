@@ -2,41 +2,26 @@ class Solution {
 public:
     int swimInWater(vector<vector<int>>& grid) {
         int n = grid.size();
-        int m = n * n;
-        vector<int> p(m);
-        iota(p.begin(), p.end(), 0);
+        vector<vector<int>> vis(n, vector<int>(n, 0));
+        priority_queue<array<int, 3>, vector<array<int, 3>>, greater<>> pq;
+        pq.push({grid[0][0], 0, 0});
+        int ans = 0;
+        int dx[4] = {-1, 0, 1, 0}, dy[4] = {0, 1, 0, -1};
 
-        auto find = [&](this auto&& find, int x) -> int {
-            if (p[x] != x) {
-                p[x] = find(p[x]);
-            }
-            return p[x];
-        };
-
-        vector<int> hi(m);
-        for (int i = 0; i < n; ++i) {
-            for (int j = 0; j < n; ++j) {
-                hi[grid[i][j]] = i * n + j;
-            }
-        }
-
-        array<int, 5> dirs{-1, 0, 1, 0, -1};
-
-        for (int t = 0; t < m; ++t) {
-            int id = hi[t];
-            int x = id / n, y = id % n;
+        while (!pq.empty()) {
+            auto [t, x, y] = pq.top();
+            pq.pop();
+            if (vis[x][y]) continue;
+            vis[x][y] = 1;
+            ans = max(ans, t);
+            if (x == n - 1 && y == n - 1) return ans;
             for (int k = 0; k < 4; ++k) {
-                int nx = x + dirs[k], ny = y + dirs[k + 1];
-                if (nx >= 0 && nx < n && ny >= 0 && ny < n && grid[nx][ny] <= t) {
-                    int a = find(x * n + y);
-                    int b = find(nx * n + ny);
-                    p[a] = b;
+                int nx = x + dx[k], ny = y + dy[k];
+                if (nx >= 0 && nx < n && ny >= 0 && ny < n && !vis[nx][ny]) {
+                    pq.push({grid[nx][ny], nx, ny});
                 }
             }
-            if (find(0) == find(m - 1)) {
-                return t;
-            }
         }
-        return 0;
+        return ans;
     }
 };
