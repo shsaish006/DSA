@@ -2,26 +2,31 @@ class Solution {
 public:
     vector<int> avoidFlood(vector<int>& rains) {
         int n = rains.size();
-        vector<int> ans(n, -1);
-        set<int> sunny;
-        unordered_map<int, int> rainy;
-        for (int i = 0; i < n; ++i) {
-            int v = rains[i];
-            if (v) {
-                if (rainy.count(v)) {
-                    auto it = sunny.upper_bound(rainy[v]);
-                    if (it == sunny.end()) {
-                        return {};
-                    }
-                    ans[*it] = v;
-                    sunny.erase(it);
-                }
-                rainy[v] = i;
+        vector<int> res(n, -1);
+        map<int, int> full;
+        set<int> dry;
+        for (int i = 0; i < n; i++) {
+            if (rains[i] == 0) {
+                dry.insert(i);
+                res[i] = 1;
             } else {
-                sunny.insert(i);
-                ans[i] = 1;
+                if (full.count(rains[i])) {
+                    auto it = dry.lower_bound(full[rains[i]]);
+                    if (it == dry.end()) return {};
+                    res[*it] = rains[i];
+                    dry.erase(it);
+                }
+                full[rains[i]] = i;
             }
         }
-        return ans;
+        return res;
     }
 };
+
+
+
+
+
+
+
+
