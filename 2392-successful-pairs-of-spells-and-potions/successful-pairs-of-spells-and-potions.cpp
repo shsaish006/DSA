@@ -1,14 +1,13 @@
 class Solution {
 public:
     vector<int> successfulPairs(vector<int>& spells, vector<int>& potions, long long success) {
-        ranges::sort(potions);
-        const int m = potions.size();
-        vector<int> ans;
-        ans.reserve(spells.size());
-
-        for (int v : spells) {
-            auto it = ranges::lower_bound(potions, static_cast<double>(success) / v);
-            ans.push_back(m - static_cast<int>(it - potions.begin()));
+        sort(potions.begin(), potions.end());
+        int m = potions.size();
+        vector<int> ans(spells.size());
+        for (int i = 0; i < spells.size(); i++) {
+            long long need = (success + spells[i] - 1) / spells[i];
+            int idx = lower_bound(potions.begin(), potions.end(), need) - potions.begin();
+            ans[i] = m - idx;
         }
         return ans;
     }
