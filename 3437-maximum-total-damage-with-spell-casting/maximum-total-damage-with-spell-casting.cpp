@@ -1,5 +1,3 @@
-#include <bits/stdc++.h>
-using namespace std;
 class Solution {
     unordered_map<int,int> cnt;
     vector<long long> f;
