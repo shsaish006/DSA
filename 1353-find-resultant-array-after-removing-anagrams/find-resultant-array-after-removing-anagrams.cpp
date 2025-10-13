@@ -1,28 +1,15 @@
 class Solution {
 public:
-    vector<string> removeAnagrams(vector<string>& words) {
-        auto check = [](string& s, string& t) -> bool {
-            if (s.size() != t.size()) {
-                return true;
-            }
-            int cnt[26]{};
-            for (char& c : s) {
-                ++cnt[c - 'a'];
-            }
-            for (char& c : t) {
-                if (--cnt[c - 'a'] < 0) {
-                    return true;
-                }
-            }
-            return false;
+    vector<string> removeAnagrams(vector<string>& a) {
+        auto f = [](string& s, string& t) {
+            if (s.size() != t.size()) return 1;
+            int c[26]{};
+            for (auto& x : s) c[x - 'a']++;
+            for (auto& x : t) if (--c[x - 'a'] < 0) return 1;
+            return 0;
         };
-
-        vector<string> ans = {words[0]};
-        for (int i = 1; i < words.size(); ++i) {
-            if (check(words[i - 1], words[i])) {
-                ans.emplace_back(words[i]);
-            }
-        }
-        return ans;
+        vector<string> o = {a[0]};
+        for (int i = 1; i < a.size(); i++) if (f(a[i - 1], a[i])) o.push_back(a[i]);
+        return o;
     }
 };
