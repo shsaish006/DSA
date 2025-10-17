@@ -1,31 +1,26 @@
 class Solution {
 public:
     int maxPartitionsAfterOperations(string s, int k) {
-        int n = s.size();
-        unordered_map<long long, int> f;
-        auto dfs = [&](this auto&& dfs, int i, int cur, int t) -> int {
-            if (i >= n) {
-                return 1;
-            }
-            long long key = (long long) i << 32 | cur << 1 | t;
-            if (f.count(key)) {
-                return f[key];
-            }
-            int v = 1 << (s[i] - 'a');
-            int nxt = cur | v;
-            int ans = __builtin_popcount(nxt) > k ? dfs(i + 1, v, t) + 1 : dfs(i + 1, nxt, t);
-            if (t) {
-                for (int j = 0; j < 26; ++j) {
-                    nxt = cur | (1 << j);
-                    if (__builtin_popcount(nxt) > k) {
-                        ans = max(ans, dfs(i + 1, 1 << j, 0) + 1);
-                    } else {
-                        ans = max(ans, dfs(i + 1, nxt, 0));
-                    }
+        int a = s.size();
+        unordered_map<long long, int> o;
+        function<int(int, int, int)> f = [&](int b, int c, int d) {
+            if (b >= a) return 1;
+            long long e = (long long)b << 32 | c << 1 | d;
+            if (o.count(e)) return o[e];
+            int g = 1 << (s[b] - 'a');
+            int h = c | g;
+            int i = __builtin_popcount(h) > k ? f(b + 1, g, d) + 1 : f(b + 1, h, d);
+            if (d) {
+                for (int j = 0; j < 26; j++) {
+                    h = c | (1 << j);
+                    if (__builtin_popcount(h) > k) i = max(i, f(b + 1, 1 << j, 0) + 1);
+                    else i = max(i, f(b + 1, h, 0));
                 }
             }
-            return f[key] = ans;
+            return o[e] = i;
         };
-        return dfs(0, 0, 1);
+
+        
+        return f(0, 0, 1);
     }
 };
