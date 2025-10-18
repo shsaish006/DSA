@@ -1,15 +1,15 @@
-class Solution {
+class Solution{
 public:
-    int maxDistinctElements(vector<int>& nums, int k) {
-        ranges::sort(nums);
-        int ans = 0, pre = INT_MIN;
-        for (int x : nums) {
-            int cur = min(x + k, max(x - k, pre + 1));
-            if (cur > pre) {
-                ++ans;
-                pre = cur;
+    int maxDistinctElements(vector<int>& a,int b){
+        sort(a.begin(),a.end());
+        int s=0,o=INT_MIN;
+        for(int val:a){
+            int c=min(val+b,max(val-b,o+1));
+            if(c>o){
+                s++;
+                o=c;
             }
         }
-        return ans;
+        return s;
     }
 };
