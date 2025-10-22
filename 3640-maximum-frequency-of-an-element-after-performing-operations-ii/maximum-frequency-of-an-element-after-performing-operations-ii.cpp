@@ -1,26 +1,18 @@
 class Solution {
 public:
-    int maxFrequency(vector<int>& nums, int k, int numOperations) {
-        unordered_map<int, int> cnt;
-        map<int, int> d;
-
-        for (int x : nums) {
+    int maxFrequency(vector<int>& a, int k, int o) {
+        unordered_map<int,int> cnt;
+        map<int,int> m;
+        for(int x:a){
             cnt[x]++;
-            d[x];
-            d[x - k]++;
-            d[x + k + 1]--;
+            m[x];
+            m[x-k]++;
+            m[x+k+1]--;
         }
-
-        int ans = 0, s = 0;
-        for (const auto& [x, t] : d) {
-            s += t;
-            ans = max(ans, min(s, cnt[x] + numOperations));
+        int s=0,ans=0;
+        for(auto&[x,v]:m){
+            s+=v;
+            ans=max(ans,min(s,cnt[x]+o));
         }
-
         return ans;
-
-
-
-        
-    }
-};
+    }};
