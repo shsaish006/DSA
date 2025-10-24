@@ -2,20 +2,26 @@ class Solution {
 public:
     int nextBeautifulNumber(int n) {
         for (int x = n + 1;; ++x) {
-            int cnt[10]{};
-            for (int y = x; y > 0; y /= 10) {
-                ++cnt[y % 10];
+            int cnt[10] = {};
+            int tmp = x;
+            while (tmp) {
+                ++cnt[tmp % 10];
+                tmp /= 10;
             }
-            bool ok = true;
-            for (int y = x; y > 0; y /= 10) {
-                if (y % 10 != cnt[y % 10]) {
-                    ok = false;
+            tmp = x;
+            bool valid = true;
+            while (tmp) {
+                if (cnt[tmp % 10] != tmp % 10) {
+                    valid = false;
                     break;
                 }
+                tmp /= 10;
             }
-            if (ok) {
-                return x;
-            }
+            if (valid) return x;
         }
+
+
     }
+
+    
 };
