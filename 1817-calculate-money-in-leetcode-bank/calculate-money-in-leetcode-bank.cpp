@@ -1,8 +1,12 @@
 class Solution {
 public:
     int totalMoney(int n) {
-        int k = n / 7, b = n % 7;
-        int s1 = (28 + 28 + 7 * (k - 1)) * k / 2;
-        int s2 = (k + 1 + k + 1 + b - 1) * b / 2;
-        return s1 + s2;
+        int fullWeeks = n / 7, remainingDays = n % 7, total = 0;
+        for (int i = 0; i < fullWeeks; i++) {
+            total += 7 * (i + 1) + 21; 
+        }
+        for (int i = 0; i < remainingDays; i++) {
+            total += fullWeeks + 1 + i;
+        }
+        return total;
     }};
