@@ -1,14 +1,14 @@
 class Solution {
 public:
     int numberOfBeams(vector<string>& bank) {
-        int ans = 0, pre = 0;
-        for (auto& row : bank) {
-            int cur = count(row.begin(), row.end(), '1');
-            if (cur) {
-                ans += pre * cur;
-                pre = cur;
-            }
+        vector<int> vals;
+        for (auto& s : bank) {
+            int c = 0;
+            for (auto ch : s) if (ch == '1') c++;
+            if (c) vals.push_back(c);
         }
-        return ans;
+        int a = 0;
+        for (int idx1 = 1; idx1 < vals.size(); idx1++) a += vals[idx1] * vals[idx1 - 1];
+        return a;
     }
 };
