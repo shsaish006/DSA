@@ -12,15 +12,15 @@ class Solution {
 public:
     ListNode* modifiedList(vector<int>& nums, ListNode* head) {
         unordered_set<int> s(nums.begin(), nums.end());
-        ListNode* dummy = new ListNode(0, head);
-        for (ListNode* pre = dummy; pre->next;) {
-            if (s.count(pre->next->val)) {
-                pre->next = pre->next->next;
-            } else {
-                pre = pre->next;
-            }
+        while (head && s.count(head->val)) head = head->next;
+        ListNode* curr = head;
+        while (curr && curr->next) {
+            if (s.count(curr->next->val)) curr->next = curr->next->next;
+            else curr = curr->next;
         }
 
+
         
-        return dummy->next;
-    }};
+        return head;
+    }
+};
