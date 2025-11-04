@@ -1,64 +1,64 @@
 class Solution {
 public:
     vector<int> findXSum(vector<int>& nums, int k, int x) {
-        using pii = pair<int, int>;
-        set<pii> l, r;
-        int s = 0;
-        unordered_map<int, int> cnt;
+        using pii = pair<int,int>;
+        multiset<pii> l, r;
+        unordered_map<int,int> cnt;
+        long long s = 0;
+        vector<int> ans;
+        int n = nums.size();
+
         auto add = [&](int v) {
-            if (cnt[v] == 0) {
-                return;
-            }
+            if (cnt[v] == 0) return;
             pii p = {cnt[v], v};
             if (!l.empty() && p > *l.begin()) {
-                s += p.first * p.second;
+                s += 1LL * p.first * p.second;
                 l.insert(p);
             } else {
                 r.insert(p);
             }
         };
+
         auto remove = [&](int v) {
-            if (cnt[v] == 0) {
-                return;
-            }
+            if (cnt[v] == 0) return;
             pii p = {cnt[v], v};
             auto it = l.find(p);
             if (it != l.end()) {
-                s -= p.first * p.second;
+                s -= 1LL * p.first * p.second;
                 l.erase(it);
             } else {
-                r.erase(p);
+                r.erase(r.find(p));
             }
         };
-        vector<int> ans;
-        for (int i = 0; i < nums.size(); ++i) {
+
+        for (int i = 0; i < n; i++) {
             remove(nums[i]);
-            ++cnt[nums[i]];
+            cnt[nums[i]]++;
             add(nums[i]);
-
             int j = i - k + 1;
-            if (j < 0) {
-                continue;
-            }
+            if (j < 0) continue;
 
-            while (!r.empty() && l.size() < x) {
-                pii p = *r.rbegin();
-                s += p.first * p.second;
-                r.erase(p);
+            while (!r.empty() && (int)l.size() < x) {
+                auto it = prev(r.end());
+                pii p = *it;
+                s += 1LL * p.first * p.second;
                 l.insert(p);
+                r.erase(it);
             }
-            while (l.size() > x) {
-                pii p = *l.begin();
-                s -= p.first * p.second;
-                l.erase(p);
+            while ((int)l.size() > x) {
+                auto it = l.begin();
+                pii p = *it;
+                s -= 1LL * p.first * p.second;
+                l.erase(it);
                 r.insert(p);
             }
-            ans.push_back(s);
+            ans.push_back((int)s);
 
             remove(nums[j]);
-            --cnt[nums[j]];
+            cnt[nums[j]]--;
             add(nums[j]);
         }
         return ans;
     }
 };
+
