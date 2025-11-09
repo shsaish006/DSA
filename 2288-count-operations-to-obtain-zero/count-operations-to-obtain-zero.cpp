@@ -1,13 +1,10 @@
 class Solution {
 public:
-    int countOperations(int num1, int num2) {
+    int countOperations(int a, int b) {
         int ans = 0;
-        for (; num1 && num2; ++ans) {
-            if (num1 >= num2) {
-                num1 -= num2;
-            } else {
-                num2 -= num1;
-            }
+        while (a && b) {
+            if (a >= b) ans += a / b, a %= b;
+            else ans += b / a, b %= a;
         }
         return ans;
     }
