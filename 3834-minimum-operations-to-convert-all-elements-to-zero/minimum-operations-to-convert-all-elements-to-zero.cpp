@@ -1,18 +1,15 @@
 class Solution {
 public:
-    int minOperations(vector<int>& nums) {
-        vector<int> stk;
-        int ans = 0;
-        for (int x : nums) {
-            while (!stk.empty() && stk.back() > x) {
-                ++ans;
-                stk.pop_back();
+    int minOperations(vector<int>& a) {
+        int n = a.size(), ans = 0;
+        vector<int> v;
+        for (int x : a) {
+            while (!v.empty() && v.back() > x) {
+                v.pop_back();
+                ans++;
             }
-            if (x != 0 && (stk.empty() || stk.back() != x)) {
-                stk.push_back(x);
-            }
+            if (x && (v.empty() || v.back() != x)) v.push_back(x);
         }
-        ans += stk.size();
-        return ans;
+        return ans + (int)v.size();
     }
 };
