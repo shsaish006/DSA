@@ -1,28 +1,15 @@
 class Solution {
 public:
-    int findMaxForm(vector<string>& strs, int m, int n) {
-        int sz = strs.size();
-        int f[sz + 1][m + 1][n + 1];
-        memset(f, 0, sizeof(f));
-        for (int i = 1; i <= sz; ++i) {
-            auto [a, b] = count(strs[i - 1]);
-            for (int j = 0; j <= m; ++j) {
-                for (int k = 0; k <= n; ++k) {
-                    f[i][j][k] = f[i - 1][j][k];
-                    if (j >= a && k >= b) {
-                        f[i][j][k] = max(f[i][j][k], f[i - 1][j - a][k - b] + 1);
-                    }
+    int findMaxForm(vector<string>& a, int m, int n) {
+        vector<vector<int>> f(m + 1, vector<int>(n + 1));
+        for (auto &s : a) {
+            int x = 0, y = 0;
+            for (auto c : s) (c == '0' ? x : y)++;
+            for (int i = m; i >= x; i--) {
+                for (int j = n; j >= y; j--) {
+                    f[i][j] = max(f[i][j], f[i - x][j - y] + 1);
                 }
             }
         }
-        return f[sz][m][n];
-    }
-
-    pair<int, int> count(string& s) {
-        int a = count_if(s.begin(), s.end(), [](char c) { return c == '0'; });
-        return {a, s.size() - a};
-
-
+        return f[m][n];
     }};
-
-    
