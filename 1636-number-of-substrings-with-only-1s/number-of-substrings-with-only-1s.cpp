@@ -1,15 +1,15 @@
 class Solution {
 public:
     int numSub(string s) {
-        const int mod = 1e9 + 7;
-        int ans = 0, cur = 0;
-        for (char c : s) {
-            if (c == '0') {
-                cur = 0;
-            } else {
-                cur++;
-                ans = (ans + cur) % mod;
+        int mod = 1000000007;
+        int a = 0, b = 0;
+        for(char c : s) {
+            if(c == '0') b = 0;
+            else {
+                b++;
+                a = (a + b) % mod;
             }
         }
-        return ans;
-    }};
+        return a;
+    }
+};
