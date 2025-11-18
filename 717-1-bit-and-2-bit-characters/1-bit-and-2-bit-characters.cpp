@@ -1,10 +1,11 @@
 class Solution {
 public:
-    bool isOneBitCharacter(vector<int>& bits) {
-        int i = 0, n = bits.size();
-        while (i < n - 1) {
-            i += bits[i] + 1;
+    bool isOneBitCharacter(vector<int>& a) {
+        int n = a.size(), cnt = 0, idx = n - 2;
+        while (idx >= 0 && a[idx] == 1) {
+            cnt++;
+            idx--;
         }
-        return i == n - 1;
+        return cnt % 2 == 0;
     }
 };
