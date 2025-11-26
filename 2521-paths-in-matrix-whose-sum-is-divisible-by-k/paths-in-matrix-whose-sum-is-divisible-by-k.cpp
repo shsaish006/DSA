@@ -8,6 +8,7 @@ public:
         
         dp[0][0][grid[0][0] % K] = 1;
         
+        
         for(int i = 0; i < m; i++) {
             for(int j = 0; j < n; j++) {
                 if(i == 0 && j == 0) continue;
@@ -24,7 +25,7 @@ public:
                 }
             }
         }
-        
+
         
         return dp[(m - 1) % 2][n - 1][0];
     }
