@@ -1,30 +1,40 @@
 class Solution {
 public:
-    int l=0;
-    long long dfs(vector<vector<int>>& graph,vector<int>&values,int node,int parent,int k){
-        long long sum=values[node];
-        for(int neighbor:graph[node]){
-            if(neighbor!=parent){
-                sum+=dfs(graph,values,neighbor,node,k);
+    int maxKDivisibleComponents(int n, vector<vector<int>>& edges, vector<int>& values, int k) {
+        int cnt = 0;
+        vector<vector<int>> vals(n);
+        for(auto &a : edges){
+            vals[a[0]].push_back(a[1]);
+            vals[a[1]].push_back(a[0]);
+        }
 
+        vector<int> mp(n, -1);
+        vector<long long> s(n, 0);
+        stack<int> st;
+        st.push(0);
+        mp[0] = -2;
+
+        vector<int> o;
+
+        while(!st.empty()){
+            int a = st.top();
+            st.pop();
+            o.push_back(a);
+            for(int b : vals[a]){
+                if(mp[b] == -1){
+                    mp[b] = a;
+                    st.push(b);
+                }
             }
         }
-        if(sum%k==0){
-            l++;
-            return 0;
-        }
-        return sum;
-    }
-    int maxKDivisibleComponents(int n, vector<vector<int>>& edges, vector<int>& values, int k) {
-        vector<vector<int>> graph(n);
-        for(auto& edge: edges){
-            graph[edge[0]].push_back(edge[1]);
-            graph[edge[1]].push_back(edge[0]);
 
+        for(int i = n-1; i >= 0; i--){
+            int a = o[i];
+            s[a] += values[a];
+            if(s[a] % k == 0) cnt++;
+            if(mp[a] >= 0) s[mp[a]] += s[a];
         }
-        dfs(graph,values,0,-1,k);
-        return l;
 
-        
+        return cnt;
     }
 };
