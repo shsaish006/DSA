@@ -1,22 +1,28 @@
 class Solution {
 public:
     long long maxRunTime(int n, vector<int>& batteries) {
-        long long l = 0, r = 0;
-        for (int x : batteries) {
-            r += x;
+        sort(batteries.begin(), batteries.end());
+        long long s = 0;
+        int m = batteries.size();
+        
+        for (int i = 0; i < m - n; i++) {
+            s += batteries[i];
         }
-        while (l < r) {
-            long long mid = (l + r + 1) >> 1;
-            long long s = 0;
-            for (int x : batteries) {
-                s += min(1LL * x, mid);
-            }
-            if (s >= n * mid) {
-                l = mid;
+        
+        vector<long long> a;
+        for (int i = m - n; i < m; i++) {
+            a.push_back(batteries[i]);
+        }
+        
+        for (int i = 0; i < n - 1; i++) {
+            long long need = (a[i+1] - a[i]) * 1LL * (i + 1);
+            if (s >= need) {
+                s -= need;
             } else {
-                r = mid - 1;
+                return a[i] + s / (i + 1);
             }
         }
-        return l;
+        
+        return a[n-1] + s / n;
     }
 };
