@@ -1,3 +1,50 @@
+// class Solution {
+// public:
+//     int countTrapezoids(vector<vector<int>>& points) {
+//         using ll = long long;
+        
+//         int n = points.size();
+//         unordered_map<long long, unordered_map<ll, int>> mp;
+//         mp.reserve(n * n);
+
+//         auto norm = [&](int &a, int &b) {
+//             if (a == 0) { b = 1; return; }
+//             if (b == 0) { a = 1; return; }
+//             int g = gcd(abs(a), abs(b));
+//             a /= g; b /= g;
+//             if (b < 0) a = -a, b = -b;
+//         };
+
+//         for (int i = 0; i < n; i++) {
+//             for (int j = 0; j < i; j++) {
+//                 int x1 = points[i][0], y1 = points[i][1];
+//                 int x2 = points[j][0], y2 = points[j][1];
+
+//                 int dx = x2 - x1, dy = y2 - y1;
+//                 norm(dy, dx);
+
+//                 long long slopeKey = (((ll)dy) << 32) ^ (unsigned int)dx;
+
+//                 ll off = (ll)dy * x1 - (ll)dx * y1;
+
+//                 mp[slopeKey][off]++;
+//             }
+//         }
+
+//         long long ans = 0;
+
+//         for (auto &s : mp) {
+//             long long pref = 0;
+//             for (auto &e : s.second) {
+//                 long long t = e.second;
+//                 ans += pref * t;
+//                 pref += t;
+//             }
+//         }
+
+//         return (int)ans;
+//     }
+// };
 class Solution {
 public:
     int countTrapezoids(vector<vector<int>>& points) {
