@@ -1,54 +1,41 @@
+uint32_t offline[100] = {0};
+
 class Solution {
 public:
-    vector<int> countMentions(int numberOfUsers, vector<vector<string>>& events) {
-        ranges::sort(events, [](const vector<string>& a, const vector<string>& b) {
-            int x = stoi(a[1]);
-            int y = stoi(b[1]);
-            if (x == y) {
-                return a[0][2] < b[0][2];
-            }
-            return x < y;
+    static vector<int> countMentions(const int n, vector<vector<string>>& a) noexcept {
+        vector<int> users(n, 0);
+        int all = 0;
+
+        sort(a.begin(), a.end(), [](const vector<string>& x, const vector<string>& y) {
+            int tx = stoi(x[1]), ty = stoi(y[1]);
+            if (tx != ty) return tx < ty;
+            return x[0][0] == 'O';
         });
 
-        vector<int> ans(numberOfUsers, 0);
-        vector<int> onlineT(numberOfUsers, 0);
-        int lazy = 0;
-
-        for (const auto& e : events) {
-            string etype = e[0];
-            int cur = stoi(e[1]);
-            string s = e[2];
-
-            if (etype[0] == 'O') {
-                onlineT[stoi(s)] = cur + 60;
-            } else if (s[0] == 'A') {
-                lazy++;
-            } else if (s[0] == 'H') {
-                for (int i = 0; i < numberOfUsers; ++i) {
-                    if (onlineT[i] <= cur) {
-                        ++ans[i];
-                    }
-                }
+        for (int i = 0; i < (int)a.size(); ++i) {
+            const auto& e = a[i];
+            if (e[0][0] == 'O') {
+                offline[stoi(e[2])] = stoi(e[1]) + 60;
             } else {
-                stringstream ss(s);
-                string token;
-                while (ss >> token) {
-                    ans[stoi(token.substr(2))]++;
+                const string& s = e[2];
+                if (s[0] == 'A') { ++all; continue; }
+                if (s[0] == 'H') {
+                    int t = stoi(e[1]);
+                    for (int id = 0; id < n; ++id) if (t >= (int)offline[id]) ++users[id];
+                    continue;
                 }
+                int L = s.size();
+                for (int j = 2; j < L - 1; j += 4) {
+                    int id = s[j] - '0';
+                    if (s[j + 1] != ' ') id = id * 10 + (s[++j] - '0');
+                    ++users[id];
+                }
+                if (s[L - 2] == 'd') ++users[s[L - 1] - '0'];
             }
         }
 
-        if (lazy > 0) {
-            for (int i = 0; i < numberOfUsers; ++i) {
-                ans[i] += lazy;
-            }
-        }
-
-        return ans;
-
+        for (int i = 0; i < n; ++i) users[i] += all;
+        memset(offline, 0, sizeof(offline));
+        return users;
     }
 };
-
-
-
-
