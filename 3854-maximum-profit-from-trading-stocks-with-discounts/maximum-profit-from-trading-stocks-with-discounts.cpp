@@ -1,54 +1,38 @@
 class Solution {
 public:
-    vector<vector<int>> tree;
-    vector<int> buyPrice, sellPrice;
-    int budget;
+    int maxProfit(int n, vector<int>& present, vector<int>& future, vector<vector<int>>& hierarchy, int budget) {
+        vector<vector<int>> g(n + 1);
+        for (auto &e : hierarchy) g[e[0]].push_back(e[1]);
 
-    int maxProfit(int n, vector<int>& present, vector<int>& future,
-                  vector<vector<int>>& hierarchy, int B) {
-        buyPrice = present;
-        sellPrice = future;
-        budget = B;
+        function<vector<array<int,2>>(int)> dfs = [&](int u) {
+            vector<array<int,2>> nxt(budget + 1, {0, 0});
 
-        tree.assign(n, {});
-        for (auto &h : hierarchy) {
-            tree[h[0] - 1].push_back(h[1] - 1);
-        }
-
-        auto dp = dfs(0);
-        return dp[budget][0];
-    }
-
-    vector<vector<int>> dfs(int u) {
-        vector<vector<int>> dp(budget + 1, vector<int>(2, 0));
-
-        for (int v : tree[u]) {
-            auto child = dfs(v);
-            vector<vector<int>> next(budget + 1, vector<int>(2, 0));
-
-            for (int b = 0; b <= budget; b++) {
-                for (int cb = 0; cb <= b; cb++) {
-                    next[b][0] = max(next[b][0], dp[b - cb][0] + child[cb][0]);
-                    next[b][1] = max(next[b][1], dp[b - cb][1] + child[cb][1]);
+            for (int v : g[u]) {
+                auto fv = dfs(v);
+                for (int j = budget; j >= 0; j--) {
+                    for (int jv = 0; jv <= j; jv++) {
+                        for (int p = 0; p < 2; p++) {
+                            nxt[j][p] = max(nxt[j][p], nxt[j - jv][p] + fv[jv][p]);
+                        }
+                    }
                 }
             }
-            dp.swap(next);
-        }
 
-        vector<vector<int>> ans(budget + 1, vector<int>(2, 0));
-        int discounted = buyPrice[u] / 2;
+            vector<array<int,2>> f(budget + 1, {0, 0});
+            int price = future[u - 1];
 
-        for (int b = 0; b <= budget; b++) {
-            ans[b][0] = dp[b][0];
-            if (b >= buyPrice[u])
-                ans[b][0] = max(ans[b][0],
-                                sellPrice[u] - buyPrice[u] + dp[b - buyPrice[u]][1]);
+            for (int j = 0; j <= budget; j++) {
+                for (int p = 0; p < 2; p++) {
+                    int cost = present[u - 1] / (p + 1);
+                    if (j >= cost)
+                        f[j][p] = max(nxt[j][0], nxt[j - cost][1] + price - cost);
+                    else
+                        f[j][p] = nxt[j][0];
+                }
+            }
+            return f;
+        };
 
-            ans[b][1] = dp[b][0];
-            if (b >= discounted)
-                ans[b][1] = max(ans[b][1],
-                                sellPrice[u] - discounted + dp[b - discounted][1]);
-        }
-        return ans;
+        return dfs(1)[budget][0];
     }
 };
