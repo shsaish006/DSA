@@ -1,21 +1,18 @@
 class Solution {
 public:
-    int bestClosingTime(string customers) {
+    int bestClosingTime(string s) {
+        int curr = 0;
+        int val = 0;
         int ans = 0;
-        int cost = 0;
-        for (char c : customers) {
-            if (c == 'Y') {
-                cost++;
-            }
-        }
-        int mn = cost;
-        for (int j = 1; j <= customers.size(); ++j) {
-            cost += customers[j - 1] == 'N' ? 1 : -1;
-            if (cost < mn) {
-                ans = j;
-                mn = cost;
+        
+        for (int i = 0; i < s.size(); i++) {
+            if (s[i] == 'Y') curr++;
+            else curr--;
+            
+            if (curr > val) {
+                val = curr;
+                ans = i + 1;
             }
         }
         return ans;
-    }
-};
+    }};
