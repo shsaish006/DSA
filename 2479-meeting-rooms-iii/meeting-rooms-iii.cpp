@@ -4,37 +4,38 @@ using pii = pair<ll, int>;
 class Solution {
 public:
     int mostBooked(int n, vector<vector<int>>& meetings) {
-        vector<int> count(n);
-        priority_queue<int, vector<int>, greater<>> available;
-        priority_queue<pii, vector<pii>, greater<>> occupied;
-
-        for (int i = 0; i < n; ++i) available.push(i);
+        priority_queue<int, vector<int>, greater<int>> idle;
+        priority_queue<pii, vector<pii>, greater<pii>> busy;
+        for (int i = 0; i < n; ++i) idle.push(i);
+        vector<int> cnt(n);
         sort(meetings.begin(), meetings.end());
-
-        for (auto& m : meetings) {
-            ll start = m[0], end = m[1];
-            while (!occupied.empty() && occupied.top().first <= start) {
-                available.push(occupied.top().second);
-                occupied.pop();
+        for (auto& v : meetings) {
+            int s = v[0], e = v[1];
+            while (!busy.empty() && busy.top().first <= s) {
+                idle.push(busy.top().second);
+                busy.pop();
             }
-            if (!available.empty()) {
-                int room = available.top();
-                available.pop();
-                occupied.push({end, room});
-                count[room]++;
+            int i = 0;
+            if (!idle.empty()) {
+                i = idle.top();
+                idle.pop();
+                busy.push({e, i});
             } else {
-                auto [freeTime, room] = occupied.top();
-                occupied.pop();
-                ll newEnd = freeTime + (end - start);
-                occupied.push({newEnd, room});
-                count[room]++;
+                auto x = busy.top();
+                busy.pop();
+                i = x.second;
+                busy.push({x.first + e - s, i});
+            }
+            ++cnt[i];
+        }
+        int ans = 0;
+        for (int i = 0; i < n; ++i) {
+            if (cnt[ans] < cnt[i]) {
+                ans = i;
             }
         }
-
-        int res = 0;
-        for (int i = 1; i < n; ++i) {
-            if (count[i] > count[res]) res = i;
-        }
-        return res;
+        return ans;
     }
+
+    
 };
