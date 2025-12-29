@@ -1,39 +1,42 @@
 class Solution {
 public:
     int d[7][7];
-    unordered_map<string, bool> f;
+    unordered_map<string,int> o;
 
-    bool pyramidTransition(string bottom, vector<string>& allowed) {
-        memset(d, 0, sizeof(d));
-        for (auto& s : allowed) {
-            int a = s[0] - 'A', b = s[1] - 'A';
-            d[a][b] |= 1 << (s[2] - 'A');
+    bool build(string& curr, int idx, string& nxt) {
+        if (idx + 1 == (int)curr.size()) {
+            return dfs(nxt);
         }
-        return dfs(bottom, "");
-    }
-
-    bool dfs(string& s, string t) {
-        if (s.size() == 1) {
-            return true;
-        }
-        if (t.size() + 1 == s.size()) {
-            return dfs(t, "");
-        }
-        string k = s + "." + t;
-        if (f.contains(k)) {
-            return f[k];
-        }
-        int a = s[t.size()] - 'A', b = s[t.size() + 1] - 'A';
-        int cs = d[a][b];
-        for (int i = 0; i < 7; ++i) {
-            if (cs >> i & 1) {
-                if (dfs(s, t + (char) (i + 'A'))) {
-                    f[k] = true;
-                    return true;
-                }
+        int a = curr[idx] - 'A';
+        int b = curr[idx + 1] - 'A';
+        int val = d[a][b];
+        for (int i = 0; i < 7; i++) {
+            if ((val >> i) & 1) {
+                nxt.push_back(char('A' + i));
+                if (build(curr, idx + 1, nxt)) return true;
+                nxt.pop_back();
             }
         }
-        f[k] = false;
         return false;
+    }
+
+    bool dfs(string curr) {
+        if (curr.size() == 1) return true;
+        if (o.count(curr)) return o[curr];
+        string nxt = "";
+        bool val = build(curr, 0, nxt);
+        o[curr] = val;
+        return val;
+    }
+
+    bool pyramidTransition(string s, vector<string>& vals) {
+        memset(d, 0, sizeof(d));
+        for (auto& temp : vals) {
+            int a = temp[0] - 'A';
+            int b = temp[1] - 'A';
+            int c = temp[2] - 'A';
+            d[a][b] |= (1 << c);
+        }
+        return dfs(s);
     }
 };
