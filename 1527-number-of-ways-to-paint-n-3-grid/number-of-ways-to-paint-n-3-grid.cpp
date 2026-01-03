@@ -1,16 +1,17 @@
+using ll = long long;
+
 class Solution {
 public:
     int numOfWays(int n) {
-        const int mod=1e9+7;
-        long long a=6;
-        long long b=6;
-        for(int i=2;i<=n;i++){
-            long long c=(a*3+b*2)%mod;
-            long long d=(a*2+b*2)%mod;
-            a=c;
-            b=d;
+        int mod = 1e9 + 7;
+        ll f0 = 6, f1 = 6;
+        while (--n) {
+            ll g0 = (f0 * 3 + f1 * 2) % mod;
+            ll g1 = (f0 * 2 + f1 * 2) % mod;
+            f0 = g0;
+            f1 = g1;
         }
-        return (a+b)%mod;
-        
+        return (int) (f0 + f1) % mod;
     }
+
 };
