@@ -1,23 +1,26 @@
 class Solution {
 public:
     int sumFourDivisors(vector<int>& nums) {
-        int ans = 0;
-        for (int x : nums) {
-            ans += f(x);
-        }
-        return ans;
+        int s = 0;
+        for (int val : nums) s += calc(val);
+        return s;
     }
 
-    int f(int x) {
-        int cnt = 2, s = x + 1;
-        for (int i = 2; i <= x / i; ++i) {
-            if (x % i == 0) {
-                ++cnt;
-                s += i;
-                if (i * i != x) {
-                    ++cnt;
-                    s += x / i;
+    int calc(int val) {
+        int cnt = 0;
+        int s = 0;
+        for (int i = 1; i * i <= val; i++) {
+            if (val % i == 0) {
+                int a = i;
+                int b = val / i;
+                if (a == b) {
+                    cnt++;
+                    s += a;
+                } else {
+                    cnt += 2;
+                    s += a + b;
                 }
+                if (cnt > 4) return 0;
             }
         }
         return cnt == 4 ? s : 0;
