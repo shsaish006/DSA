@@ -11,32 +11,19 @@
  */
 class Solution {
 public:
-    int maxProduct(TreeNode* root) {
-        using ll = long long;
-        ll ans = 0;
-        const int mod = 1e9 + 7;
-
-        auto sum = [&](this auto&& sum, TreeNode* root) -> ll {
-            if (!root) {
-                return 0;
-            }
-            return root->val + sum(root->left) + sum(root->right);
-        };
-
-        ll s = sum(root);
-
-        auto dfs = [&](this auto&& dfs, TreeNode* root) -> ll {
-            if (!root) {
-                return 0;
-            }
-            ll t = root->val + dfs(root->left) + dfs(root->right);
-            if (t < s) {
-                ans = max(ans, t * (s - t));
-            }
-            return t;
-        };
-
-        dfs(root);
-        return ans % mod;
+    long long s=0,ans=0;
+    long long f(TreeNode* r){
+        return r?r->val+f(r->left)+f(r->right):0;
+    }
+    long long g(TreeNode* r){
+        if(!r) return 0;
+        long long t=r->val+g(r->left)+g(r->right);
+        ans=max(ans,t*(s-t));
+        return t;
+    }
+    int maxProduct(TreeNode* r) {
+        s=f(r);
+        g(r);
+        return ans%1000000007;
     }
 };
