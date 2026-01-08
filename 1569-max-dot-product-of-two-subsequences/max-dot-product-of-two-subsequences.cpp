@@ -1,15 +1,15 @@
 class Solution {
 public:
-    int maxDotProduct(vector<int>& nums1, vector<int>& nums2) {
-        int m = nums1.size(), n = nums2.size();
-        int f[m + 1][n + 1];
-        memset(f, 0xc0, sizeof f);
-        for (int i = 1; i <= m; ++i) {
-            for (int j = 1; j <= n; ++j) {
-                int v = nums1[i - 1] * nums2[j - 1];
-                f[i][j] = max(f[i - 1][j], f[i][j - 1]);
-                f[i][j] = max(f[i][j], max(0, f[i - 1][j - 1]) + v);
+    int maxDotProduct(vector<int>& nums, vector<int>& vals) {
+        int a=nums.size(),b=vals.size();
+        int i,j,val;
+        vector<vector<int>> o(a+1, vector<int>(b+1, -1000000000));
+        for(i=1;i<=a;i++){
+            for(j=1;j<=b;j++){
+                val=nums[i-1]*vals[j-1];
+                o[i][j]=max(o[i-1][j],o[i][j-1]);
+                o[i][j]=max(o[i][j],max(0,o[i-1][j-1])+val);
             }
         }
-        return f[m][n];
+        return o[a][b];
     }};
