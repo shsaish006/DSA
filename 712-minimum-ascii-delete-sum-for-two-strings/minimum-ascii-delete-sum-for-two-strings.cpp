@@ -1,26 +1,18 @@
 class Solution {
 public:
-    int minimumDeleteSum(string s1, string s2) {
-        int m = s1.size(), n = s2.size();
-        int f[m + 1][n + 1];
-        memset(f, 0, sizeof f);
-        for (int i = 1; i <= m; ++i) {
-            f[i][0] = f[i - 1][0] + s1[i - 1];
-        }
-        for (int j = 1; j <= n; ++j) {
-            f[0][j] = f[0][j - 1] + s2[j - 1];
-        }
-        for (int i = 1; i <= m; ++i) {
-            for (int j = 1; j <= n; ++j) {
-                if (s1[i - 1] == s2[j - 1]) {
-                    f[i][j] = f[i - 1][j - 1];
-                } else {
-                    f[i][j] = min(f[i - 1][j] + s1[i - 1], f[i][j - 1] + s2[j - 1]);
-                }
+    int minimumDeleteSum(string a, string b) {
+        int m=a.size(), n=b.size();
+        int f[m+1][n+1];
+        memset(f,0,sizeof f);
+        for(int i=1;i<=m;i++){
+            for(int j=1;j<=n;j++){
+                f[i][j]=max(f[i-1][j],f[i][j-1]);
+                if(a[i-1]==b[j-1]) f[i][j]=max(f[i][j],f[i-1][j-1]+a[i-1]);
             }
         }
-
-        return f[m][n];
+        int s=0;
+        for(char c:a) s+=c;
+        for(char c:b) s+=c;
+        return s-2*f[m][n];
     }
-    
 };
