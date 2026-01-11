@@ -1,36 +1,21 @@
-class Solution {
+class Solution{
 public:
-    int maximalRectangle(vector<vector<char>>& matrix) {
-        int n = matrix[0].size();
-        vector<int> heights(n);
-        int ans = 0;
-        for (auto& row : matrix) {
-            for (int j = 0; j < n; ++j) {
-                if (row[j] == '1')
-                    ++heights[j];
-                else
-                    heights[j] = 0;
+    int maximalRectangle(vector<vector<char>>& m){
+        if(m.empty()) return 0;
+        int r=m.size(),c=m[0].size(),ans=0;
+        vector<int> h(c+1);
+        for(int i=0;i<r;i++){
+            for(int j=0;j<c;j++) h[j]=m[i][j]=='1'?h[j]+1:0;
+            stack<int> st;
+            for(int j=0;j<=c;j++){
+                int x=j==c?0:h[j];
+                while(!st.empty() && h[st.top()]>=x){
+                    int ht=h[st.top()];
+                    st.pop();
+                    int l=st.empty()?0:st.top()+1;
+                    ans=max(ans,ht*(j-l));
+                }
+                st.push(j);
             }
-            ans = max(ans, largestRectangleArea(heights));
         }
-        return ans;
-    }
-
-    int largestRectangleArea(vector<int>& heights) {
-        int res = 0, n = heights.size();
-        stack<int> stk;
-        vector<int> left(n, -1);
-        vector<int> right(n, n);
-        for (int i = 0; i < n; ++i) {
-            while (!stk.empty() && heights[stk.top()] >= heights[i]) {
-                right[stk.top()] = i;
-                stk.pop();
-            }
-            if (!stk.empty()) left[i] = stk.top();
-            stk.push(i);
-        }
-        for (int i = 0; i < n; ++i)
-            res = max(res, heights[i] * (right[i] - left[i] - 1));
-        return res;
-    }
-};
+        return ans;}};
