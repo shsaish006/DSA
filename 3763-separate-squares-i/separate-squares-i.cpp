@@ -1,38 +1,30 @@
 class Solution {
 public:
-    vector<vector<int>>* squares;
-    double s;
-
-    bool check(double y1) {
-        double t = 0.0;
-        for (const auto& a : *squares) {
-            int y = a[1];
-            int l = a[2];
-            if (y < y1) {
-                t += (double) l * min(y1 - y, (double) l);
-            }
+    double areaBelow(double y, const vector<vector<int>>& a){
+        double t=0.0;
+        for(auto& v:a){
+            double b=v[1];
+            double c=v[2];
+            if(b+c<=y) t+=c*c;
+            else if(b<y) t+=c*(y-b);
         }
-        return t >= s / 2.0;
+        return t;
     }
 
-    double separateSquares(vector<vector<int>>& squares) {
-        this->squares = &squares;
-        s = 0.0;
-        double l = 0.0;
-        double r = 0.0;
-        for (const auto& a : squares) {
-            s += (double) a[2] * a[2];
-            r = max(r, (double) a[1] + a[2]);
+    double separateSquares(vector<vector<int>>& a) {
+        double tot=0;
+        double lo=1e18,hi=-1e18;
+        for(auto& v:a){
+            tot+= (double)v[2]*v[2];
+            lo=min(lo,(double)v[1]);
+            hi=max(hi,(double)v[1]+v[2]);
         }
-        const double eps = 1e-5;
-        while (r - l > eps) {
-            double mid = (l + r) / 2.0;
-            if (check(mid)) {
-                r = mid;
-            } else {
-                l = mid;
-            }
+        double need=tot/2.0;
+        for(int it=0;it<70;it++){
+            double mid=(lo+hi)/2.0;
+            if(areaBelow(mid,a)>=need) hi=mid;
+            else lo=mid;
         }
-        return r;
+        return hi;
     }
 };
