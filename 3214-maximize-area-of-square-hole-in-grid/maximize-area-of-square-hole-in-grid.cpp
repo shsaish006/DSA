@@ -1,18 +1,21 @@
-class Solution {
+class Solution{
 public:
-    int maximizeSquareHoleArea(int n, int m, vector<int>& hBars, vector<int>& vBars) {
-        auto f = [](vector<int>& nums) {
-            int ans = 1, cnt = 1;
-            sort(nums.begin(), nums.end());
-            for (int i = 1; i < nums.size(); ++i) {
-                if (nums[i] == nums[i - 1] + 1) {
-                    ans = max(ans, ++cnt);
-                } else {
-                    cnt = 1;
+    int maximizeSquareHoleArea(int n,int m,vector<int>& a,vector<int>& b){
+        auto g=[&](vector<int>& nums){
+            unordered_set<int> s(nums.begin(),nums.end());
+            int o=1;
+            for(int val:nums){
+                if(!s.count(val-1)){
+                    int curr=val,cnt=1;
+                    while(s.count(curr+1)){
+                        curr++;
+                        cnt++;
+                    }
+                    if(cnt>o) o=cnt;
                 }
             }
-            return ans + 1;
+            return o+1;
         };
-        int x = min(f(hBars), f(vBars));
-        return x * x;
-    }};
+        int s=g(a),o=g(b);
+        int d=min(s,o);
+        return d*d; }};
