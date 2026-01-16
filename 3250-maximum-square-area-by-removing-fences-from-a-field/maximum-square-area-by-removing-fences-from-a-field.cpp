@@ -1,27 +1,25 @@
 class Solution {
 public:
-    int maximizeSquareArea(int m, int n, vector<int>& hFences, vector<int>& vFences) {
-        auto f = [](vector<int>& nums, int k) {
-            nums.push_back(k);
-            nums.push_back(1);
-            sort(nums.begin(), nums.end());
-            unordered_set<int> s;
-            for (int i = 0; i < nums.size(); ++i) {
-                for (int j = 0; j < i; ++j) {
-                    s.insert(nums[i] - nums[j]);
-                }
-            }
-            return s;
-        };
-        auto hs = f(hFences, m);
-        auto vs = f(vFences, n);
-        int ans = 0;
-        for (int h : hs) {
-            if (vs.count(h)) {
-                ans = max(ans, h);
+    int maximizeSquareArea(int m, int n, vector<int>& h, vector<int>& v) {
+        h.push_back(1);
+        h.push_back(m);
+        v.push_back(1);
+        v.push_back(n);
+        sort(h.begin(),h.end());
+        sort(v.begin(),v.end());
+        unordered_map<int,int> o;
+        for(int i=0;i<h.size();i++){
+            for(int j=i+1;j<h.size();j++){
+                o[h[j]-h[i]]++;
             }
         }
-        const int mod = 1e9 + 7;
-        return ans > 0 ? 1LL * ans * ans % mod : -1;
+        long long ans=0,c=1000000007;
+        for(int i=0;i<v.size();i++){
+            for(int j=i+1;j<v.size();j++){
+                int d=v[j]-v[i];
+                if(o.count(d)) ans=max(ans,(long long)d);
+            }
+        }
+        return ans?ans*ans%c:-1;
     }
 };
