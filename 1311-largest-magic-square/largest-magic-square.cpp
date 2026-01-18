@@ -1,57 +1,42 @@
 class Solution {
 public:
-    vector<vector<int>> rowsum;
-    vector<vector<int>> colsum;
-
     int largestMagicSquare(vector<vector<int>>& grid) {
         int m = grid.size(), n = grid[0].size();
-        rowsum.assign(m + 1, vector<int>(n + 1, 0));
-        colsum.assign(m + 1, vector<int>(n + 1, 0));
-        for (int i = 1; i <= m; ++i) {
-            for (int j = 1; j <= n; ++j) {
-                rowsum[i][j] = rowsum[i][j - 1] + grid[i - 1][j - 1];
-                colsum[i][j] = colsum[i - 1][j] + grid[i - 1][j - 1];
-            }
-        }
-        for (int k = min(m, n); k > 1; --k) {
-            for (int i = 0; i + k - 1 < m; ++i) {
-                for (int j = 0; j + k - 1 < n; ++j) {
-                    int i2 = i + k - 1, j2 = j + k - 1;
-                    if (check(grid, i, j, i2, j2)) {
-                        return k;
+        int ans = 1;
+
+        for (int k = 2; k <= m && k <= n; ++k) {
+            bool found = false;
+            for (int i = 0; i + k <= m && !found; ++i) {
+                for (int j = 0; j + k <= n && !found; ++j) {
+                    int val = 0;
+                    for (int x = 0; x < k; ++x) val += grid[i][j+x];
+
+                    bool ok = true;
+
+                    for (int r = i; r < i + k; ++r) {
+                        int s = accumulate(grid[r].begin() + j, grid[r].begin() + j + k, 0);
+                        if (s != val) { ok = false; break; }
                     }
+                    if (!ok) continue;
+
+                    for (int c = j; c < j + k; ++c) {
+                        int s = 0;
+                        for (int r = i; r < i + k; ++r) s += grid[r][c];
+                        if (s != val) { ok = false; break; }
+                    }
+                    if (!ok) continue;
+
+                    int diag1 = 0, diag2 = 0;
+                    for (int d = 0; d < k; ++d) {
+                        diag1 += grid[i+d][j+d];
+                        diag2 += grid[i+d][j+k-1-d];
+                    }
+                    if (diag1 != val || diag2 != val) ok = false;
+
+                    if (ok) { ans = k; found = true; }
                 }
             }
         }
-        return 1;
-    }
 
-    bool check(vector<vector<int>>& grid, int x1, int y1, int x2, int y2) {
-        int val = rowsum[x1 + 1][y2 + 1] - rowsum[x1 + 1][y1];
-        for (int i = x1 + 1; i <= x2; ++i) {
-            if (rowsum[i + 1][y2 + 1] - rowsum[i + 1][y1] != val) {
-                return false;
-            }
-        }
-        for (int j = y1; j <= y2; ++j) {
-            if (colsum[x2 + 1][j + 1] - colsum[x1][j + 1] != val) {
-                return false;
-            }
-        }
-        int s = 0;
-        for (int i = x1, j = y1; i <= x2; ++i, ++j) {
-            s += grid[i][j];
-        }
-        if (s != val) {
-            return false;
-        }
-        s = 0;
-        for (int i = x1, j = y2; i <= x2; ++i, --j) {
-            s += grid[i][j];
-        }
-        if (s != val) {
-            return false;
-        }
-        return true;
-    }
-};
+        return ans;
+    }};
