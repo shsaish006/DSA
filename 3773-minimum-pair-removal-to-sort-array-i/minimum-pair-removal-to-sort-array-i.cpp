@@ -1,35 +1,36 @@
 class Solution {
 public:
     int minimumPairRemoval(vector<int>& nums) {
-        vector<int> vals=nums;
-        int cnt=0;
-        while(true){
-            bool ok=true;
-            for(int i=1;i<(int)vals.size();i++){
-                if(vals[i]<vals[i-1]){
-                    ok=false;
-                    break;
+        vector<int> arr = nums;
+        int ans = 0;
+
+        while (!isNonDecreasing(arr)) {
+            int k = 0;
+            int s = arr[0] + arr[1];
+
+            for (int i = 1; i < arr.size() - 1; ++i) {
+                int t = arr[i] + arr[i + 1];
+                if (s > t) {
+                    s = t;
+                    k = i;
                 }
             }
-            if(ok) break;
-            int s=vals[0]+vals[1];
-            int i=0;
-            for(int j=1;j<(int)vals.size()-1;j++){
-                int val=vals[j]+vals[j+1];
-                if(val<s){
-                    s=val;
-                    i=j;
-                }
-            }
-            vals[i]=s;
-            vals.erase(vals.begin()+i+1);
-            cnt++;
+
+            arr[k] = s;
+            arr.erase(arr.begin() + (k + 1));
+            ++ans;
         }
-        return cnt;
-        
+
+        return ans;
     }
-  
 
-
-  
+private:
+    bool isNonDecreasing(const vector<int>& arr) {
+        for (int i = 1; i < (int) arr.size(); ++i) {
+            if (arr[i] < arr[i - 1]) {
+                return false;
+            }
+        }
+        return true;
+    }
 };
