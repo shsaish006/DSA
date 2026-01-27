@@ -1,39 +1,33 @@
 class Solution {
 public:
     int minCost(int n, vector<vector<int>>& edges) {
-        using pii = pair<int, int>;
-        vector<vector<pii>> g(n);
-        for (auto& e : edges) {
-            int u = e[0], v = e[1], w = e[2];
-            g[u].push_back({v, w});
-            g[v].push_back({u, w * 2});
+        vector<vector<pair<int,int>>> g(n);
+        for (auto &e : edges) {
+            g[e[0]].push_back({e[1], e[2]});
+            g[e[1]].push_back({e[0], e[2] * 2});
         }
 
-        const int inf = INT_MAX / 2;
-        vector<int> dist(n, inf);
-        dist[0] = 0;
+        vector<long long> dist(n, LLONG_MAX);
+        priority_queue<pair<long long,int>, vector<pair<long long,int>>, greater<pair<long long,int>>> pq;
 
-        priority_queue<pii, vector<pii>, greater<pii>> pq;
+        dist[0] = 0;
         pq.push({0, 0});
 
         while (!pq.empty()) {
             auto [d, u] = pq.top();
             pq.pop();
-            if (d > dist[u]) {
-                continue;
-            }
-            if (u == n - 1) {
-                return d;
-            }
+            if (d > dist[u]) continue;
+            if (u == n - 1) return d;
 
-            for (auto& [v, w] : g[u]) {
-                int nd = d + w;
-                if (nd < dist[v]) {
-                    dist[v] = nd;
-                    pq.push({nd, v});
+            for (auto &p : g[u]) {
+                int v = p.first;
+                long long w = p.second;
+                if (dist[u] + w < dist[v]) {
+                    dist[v] = dist[u] + w;
+                    pq.push({dist[v], v});
                 }
             }
         }
+
         return -1;
-    }
-};
+    }};
