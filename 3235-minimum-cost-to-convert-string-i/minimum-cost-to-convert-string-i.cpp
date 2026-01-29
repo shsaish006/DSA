@@ -1,32 +1,42 @@
-using LL=long long;
 class Solution {
-    LL d[26][26];
 public:
-    long long minimumCost(string source, string target, vector<char>& original, vector<char>& changed, vector<int>& cost) {
-        for(int i=0;i<26;i++)
-        for(int j=0;j<26;j++){
-            if(i!=j)
-            d[i][j]=LLONG_MAX/3;
-        
-        else
-            d[i][j]=0;
+    long long minimumCost(string s, string t, vector<char>& a, vector<char>& b, vector<int>& c) {
+        vector<vector<pair<int,int>>> g(26);
+        for (int i = 0; i < a.size(); ++i) {
+            g[a[i]-'a'].push_back({b[i]-'a', c[i]});
         }
-        for(int i=0;i<cost.size();i++)
-        d[original[i]-'a'][changed[i]-'a']=min(d[original[i]-'a'][changed[i]-'a'],(LL) cost[i]);
-        for(int k=0;k<26;k++)
-        for(int i=0;i<26;i++)
-        for(int j=0;j<26;j++)
-        d[i][j]=min(d[i][j],d[i][k]+d[k][j]);
 
-        LL ret=0;
-        for(int i=0;i<source.size();i++){
-            int a=source[i]-'a';
-            int b=target[i]-'a';
-            if(d[a][b]==LLONG_MAX/3) return -1;
-            ret +=d[a][b];
+        const long long inf = 1e18;
+        vector<vector<long long>> d(26, vector<long long>(26, inf));
+
+        for (int i = 0; i < 26; ++i) {
+            priority_queue<pair<long long,int>, vector<pair<long long,int>>, greater<pair<long long,int>>> pq;
+            d[i][i] = 0;
+            pq.push({0, i});
+            while (!pq.empty()) {
+                auto cur = pq.top();
+                pq.pop();
+                long long dist = cur.first;
+                int u = cur.second;
+                if (dist > d[i][u]) continue;
+                for (auto &p : g[u]) {
+                    int v = p.first;
+                    long long w = p.second;
+                    if (d[i][v] > dist + w) {
+                        d[i][v] = dist + w;
+                        pq.push({d[i][v], v});
+                    }
+                }
+            }
         }
-        return ret;
-        
-    }
-};
 
+        long long ans = 0;
+        for (int i = 0; i < s.size(); ++i) {
+            if (s[i] != t[i]) {
+                long long val = d[s[i]-'a'][t[i]-'a'];
+                if (val >= inf) return -1;
+                ans += val;
+            }
+        }
+        return ans;
+    }};
