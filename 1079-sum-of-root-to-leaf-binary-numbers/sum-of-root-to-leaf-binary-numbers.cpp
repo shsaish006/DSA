@@ -12,19 +12,16 @@
 class Solution {
 public:
     int sumRootToLeaf(TreeNode* root) {
-        unordered_map<TreeNode*,int> dp;
-        return dfs(root,0,dp);
-        
-    }
-    int dfs(TreeNode* node, int ps, unordered_map<TreeNode*,int>&dp){
-        if(!node) return 0;
-        ps=(ps<<1)|node->val;
-        if(dp.count(node)) return dp[node];
-        if(!node->left && !node->right){
-            dp[node]=ps;
-            return dp[node];
-        }
-        dp[node]=dfs(node->left,ps,dp)+dfs(node->right,ps,dp);
-        return dp[node];
+        auto dfs = [&](this auto&& dfs, TreeNode* root, int x) -> int {
+            if (!root) {
+                return 0;
+            }
+            x = x << 1 | root->val;
+            if (root->left == root->right) {
+                return x;
+            }
+            return dfs(root->left, x) + dfs(root->right, x);
+        };
+        return dfs(root, 0);
     }
 };
