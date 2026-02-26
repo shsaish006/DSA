@@ -1,22 +1,21 @@
 class Solution {
 public:
     int numSteps(string s) {
-        int ans = 0;
-        bool carry = false;
-        for (int i = s.size() - 1; i; --i) {
-            char c = s[i];
-            if (carry) {
-                if (c == '0') {
-                    c = '1';
-                    carry = false;
-                } else
-                    c = '0';
+        int n = s.size();
+        int steps = 0;
+        int carry = 0;
+
+        for (int i = n - 1; i > 0; i--) {
+            int bit = (s[i] - '0') + carry;
+
+            if (bit % 2 == 0) {
+                steps += 1;  
+            } else {
+                steps += 2;  
+                carry = 1;   
             }
-            if (c == '1') {
-                ++ans;
-                carry = true;
-            }
-            ++ans;
         }
-        if (carry) ++ans;
-        return ans; }};
+
+        return steps + carry;
+    }
+};
