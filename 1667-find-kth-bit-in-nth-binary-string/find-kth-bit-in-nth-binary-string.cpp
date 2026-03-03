@@ -1,17 +1,18 @@
 class Solution {
 public:
     char findKthBit(int n, int k) {
-        if(n==1) return '0';
-        int len=(1<<n)-1;
-        int mid=(len/2)+1;
-        if(k==mid) return '1';
-        if(k<mid){
-            return findKthBit(n-1,k);
-            // char c=findKthBit(n-1,len-k+1);
-            // return (c=='0' )? '1': '0';
-        }
-        char c=findKthBit(n-1,len-k+1);
-            return (c=='0' )? '1': '0';
-        
-    }
-};
+        function<int(int, int)> dfs = [&](int n, int k) {
+            if (k == 1) {
+                return 0;
+            }
+            if ((k & (k - 1)) == 0) {
+                return 1;
+            }
+            int m = 1 << n;
+            if (k * 2 < m - 1) {
+                return dfs(n - 1, k);
+            }
+            return dfs(n - 1, m - k) ^ 1;
+        };
+        return '0' + dfs(n, k);
+    }};
