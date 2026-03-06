@@ -1,6 +1,8 @@
 class Solution {
 public:
     bool checkOnesSegment(string s) {
-        return s.find("01") == -1;
+        string t = s;
+        sort(t.rbegin(), t.rend());
+        return s == t;
     }
 };
