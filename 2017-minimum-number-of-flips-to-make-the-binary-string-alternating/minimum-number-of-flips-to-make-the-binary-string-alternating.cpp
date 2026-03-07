@@ -1,22 +1,14 @@
 class Solution {
 public:
     int minFlips(string s) {
-        int n = s.size();
-        string target = "01";
-        int cnt = 0;
-        for (int i = 0; i < n; ++i) {
-            if (s[i] != target[i & 1]) {
-                ++cnt;
-            }
+        int n = s.size(), cnt = 0, ans;
+        for(int i=0;i<n;i++) cnt += s[i] != "01"[i&1];
+        ans = min(cnt, n-cnt);
+        for(int i=0;i<n;i++){
+            cnt -= s[i] != "01"[i&1];
+            cnt += s[i] != "01"[(i+n)&1];
+            ans = min({ans,cnt,n-cnt});
         }
-        int ans = min(cnt, n - cnt);
-        for (int i = 0; i < n; ++i) {
-            if (s[i] != target[i & 1]) {
-                --cnt;
-            }
-            if (s[i] != target[(i + n) & 1]) {
-                ++cnt;
-            }
-            ans = min({ans, cnt, n - cnt});
-        }
-        return ans; }};
+        return ans;
+    }
+};
