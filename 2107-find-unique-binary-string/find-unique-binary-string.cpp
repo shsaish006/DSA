@@ -1,16 +1,14 @@
 class Solution {
 public:
     string findDifferentBinaryString(vector<string>& nums) {
-        int mask=0;
-        for(auto& x:nums){
-            int cnt=count(x.begin(),x.end(),'1');
-            mask|=1<<cnt;
-        }
-        for(int i=0;;++i){
-            if(mask>>i&1^1){
-                return string(i,'1')+string(nums.size()-i,'0');
-            }
+        int n = nums.size();
+        string s = "";
+        
+        for (int i = 0; i < n; i++) {
+            if (nums[i][i] == '0') s += '1';
+            else s += '0';
         }
         
+        return s;
     }
 };
