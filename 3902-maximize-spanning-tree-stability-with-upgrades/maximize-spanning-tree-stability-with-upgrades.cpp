@@ -1,97 +1,82 @@
-class UnionFind {
-public:
-    vector<int> p, size;
-    int cnt;
-
-    UnionFind(int n) {
-        p.resize(n);
-        size.assign(n, 1);
-        cnt = n;
-        for (int i = 0; i < n; i++) p[i] = i;
-    }
-
-    int find(int x) {
-        if (p[x] != x) p[x] = find(p[x]);
-        return p[x];
-    }
-
-    bool unite(int a, int b) {
-        int pa = find(a), pb = find(b);
-        if (pa == pb) return false;
-        if (size[pa] > size[pb]) {
-            p[pb] = pa;
-            size[pa] += size[pb];
-        } else {
-            p[pa] = pb;
-            size[pb] += size[pa];
-        }
-        cnt--;
-        return true;
-    }
-};
-
 class Solution {
 public:
-    int n, k;
-    vector<vector<int>> edges;
+struct dsu {
+        vector<int> nums, vals;
+        int cnt;
+        dsu(int a){
+            nums.resize(a);
+            vals.assign(a,1);
+            cnt=a;
+            for(int i=0;i<a;i++) nums[i]=i;
+        }
+        int f(int a){
+            return nums[a]==a?a:nums[a]=f(nums[a]);
+        }
+        bool u(int a,int b){
+            a=f(a); b=f(b);
+            if(a==b) return 0;
+            if(vals[a]<vals[b]) swap(a,b);
+            nums[b]=a;
+            vals[a]+=vals[b];
+            cnt--;
+            return 1;
+        }
+    };
 
-    bool check(int lim) {
-        UnionFind uf(n);
+    int maxStability(int a, vector<vector<int>>& nums, int b) {
 
-        for (auto& e : edges) {
-            int u = e[0], v = e[1], s = e[2];
-            if (s >= lim) {
-                uf.unite(u, v);
+        int mn = 1e9;
+
+        dsu d0(a);
+
+        for(auto &v:nums){
+            if(v[3]){
+                mn=min(mn,v[2]);
+                if(!d0.u(v[0],v[1])) return -1;
             }
         }
 
-        int rem = k;
-        for (auto& e : edges) {
-            int u = e[0], v = e[1], s = e[2];
-            if (s * 2 >= lim && rem > 0) {
-                if (uf.unite(u, v)) {
-                    rem--;
+        for(auto &v:nums) d0.u(v[0],v[1]);
+        if(d0.cnt>1) return -1;
+
+
+        auto ok=[&](int val){
+
+            vector<vector<int>> temp = nums;
+
+            sort(temp.begin(), temp.end(),
+            [&](auto &x, auto &y){
+                return x[2] > y[2];
+            });
+
+            dsu d(a);
+
+            int cnt = b;
+
+            for(auto &v:temp){
+
+                int s=v[2];
+                int u=v[0];
+                int w=v[1];
+
+                if(s>=val){
+                    d.u(u,w);
+                }
+                else if(cnt && s*2>=val){
+                    if(d.u(u,w)) cnt--;
                 }
             }
-        }
 
-        return uf.cnt == 1;
-    }
+            return d.cnt==1;
+        };
 
-    int maxStability(int n, vector<vector<int>>& edges, int k) {
-        this->n = n;
-        this->edges = edges;
-        this->k = k;
 
-        UnionFind uf(n);
-        int mn = 1e6;
+        int l=1,r=mn;
 
-        for (auto& e : edges) {
-            int u = e[0], v = e[1], s = e[2], must = e[3];
-            if (must) {
-                mn = min(mn, s);
-                if (!uf.unite(u, v)) {
-                    return -1;
-                }
-            }
-        }
-
-        for (auto& e : edges) {
-            uf.unite(e[0], e[1]);
-        }
-
-        if (uf.cnt > 1) {
-            return -1;
-        }
-
-        int l = 1, r = mn;
-        while (l < r) {
-            int mid = (l + r + 1) >> 1;
-            if (check(mid)) {
-                l = mid;
-            } else {
-                r = mid - 1;
-            }
+        while(l<r){
+            int m=(l+r+1)/2;
+            if(ok(m)) l=m;
+            else r=m-1;
         }
 
         return l;
