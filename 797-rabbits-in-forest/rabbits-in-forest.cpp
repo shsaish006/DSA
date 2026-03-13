@@ -1,15 +1,22 @@
 class Solution {
 public:
-    int numRabbits(vector<int>& answers) {
-        unordered_map<int, int> cnt;
-        for (int x : answers) {
-            ++cnt[x];
+    int numRabbits(vector<int>& nums) {
+        sort(nums.begin(), nums.end());
+        int a=0,cnt=0,val=-1;
+
+        for(int i=0;i<nums.size();i++){
+            if(nums[i]!=val){
+                if(cnt>0) a+=val+1;
+                val=nums[i];
+                cnt=0;
+            }
+            cnt++;
+            if(cnt==val+1){
+                a+=val+1;
+                cnt=0;
+            }
         }
-        int ans = 0;
-        for (auto& [x, v] : cnt) {
-            int group = x + 1;
-            ans += (v + group - 1) / group * group;
-        }
-        return ans;
-    }
-};
+
+        if(cnt>0) a+=val+1;
+        return a;
+    }};
