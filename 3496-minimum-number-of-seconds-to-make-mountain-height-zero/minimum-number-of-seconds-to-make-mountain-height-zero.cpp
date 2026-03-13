@@ -1,22 +1,15 @@
 class Solution {
 public:
-    long long minNumberOfSeconds(int mountainHeight, vector<int>& workerTimes) {
-        using ll = long long;
-        ll l = 1, r = 1e16;
-        auto check = [&](ll t) -> bool {
-            ll h = 0;
-            for (int& wt : workerTimes) {
-                h += (long long) (sqrt(t * 2.0 / wt + 0.25) - 0.5);
-            }
-            return h >= mountainHeight;
-        };
-        while (l < r) {
-            ll mid = (l + r) >> 1;
-            if (check(mid)) {
-                r = mid;
-            } else {
-                l = mid + 1;
-            }
+    long long minNumberOfSeconds(int a, vector<int>& nums) {
+        long long b = 1, c = 1e16;
+        while (b < c) {
+            long long d = (b + c) / 2;
+            long long cnt = 0;
+            for (int i = 0; i < nums.size(); i++)
+                cnt += (long long)(sqrt(d * 2.0 / nums[i] + 0.25) - 0.5);
+            if (cnt >= a) c = d;
+            else b = d + 1;
         }
-        return l;
-    }};
+        return b;
+    }
+};
