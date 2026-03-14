@@ -1,21 +1,28 @@
 class Solution {
 public:
-    vector<string> ans;
     string getHappyString(int n, int k) {
-        dfs("", n);
-        return ans.size() < k ? "" : ans[k - 1];
-    }
+        string s = "";
+        int a = 1;
+        for (int i = 1; i < n; i++) a *= 2;
 
-    void dfs(string t, int n) {
-        if (t.size() == n) {
-            ans.push_back(t);
-            return;
+        if (k > 3 * a) return "";
+
+        char nums[3] = {'a','b','c'};
+
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < 3; j++) {
+                if (i && s.back() == nums[j]) continue;
+
+                if (k > a) {
+                    k -= a;
+                } else {
+                    s.push_back(nums[j]);
+                    break;
+                }
+            }
+            if (i < n - 1) a /= 2;
         }
-        for (int c = 'a'; c <= 'c'; ++c) {
-            if (t.size() && t.back() == c) continue;
-            t.push_back(c);
-            dfs(t, n);
-            t.pop_back();
-        }
+
+        return s;
     }
 };
