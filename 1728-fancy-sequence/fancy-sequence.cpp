@@ -116,8 +116,7 @@ public:
         ++n;
         tree->modifyAdd(n, n, val);
     }
-
-    void addAll(int inc) {
+void addAll(int inc) {
         tree->modifyAdd(1, n, inc);
     }
 
