@@ -119,8 +119,7 @@ public:
 void addAll(int inc) {
         tree->modifyAdd(1, n, inc);
     }
-
-    void multAll(int m) {
+void multAll(int m) {
         tree->modifyMul(1, n, m);
     }
 
