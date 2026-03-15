@@ -114,6 +114,8 @@ public:
 
     void append(int val) {
         ++n;
+
+        
         tree->modifyAdd(n, n, val);
     }
 void addAll(int inc) {
