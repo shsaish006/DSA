@@ -1,27 +1,17 @@
 class Solution {
 public:
     bool findRotation(vector<vector<int>>& mat, vector<vector<int>>& target) {
-        int n = mat.size();
-        int ok = 0b1111;
-        for (int i = 0; i < n; ++i) {
-            for (int j = 0; j < n; ++j) {
-                if (mat[i][j] != target[i][j]) {
-                    ok &= ~0b0001;
-                }
-                if (mat[j][n - 1 - i] != target[i][j]) {
-                    ok &= ~0b0010;
-                }
-                if (mat[n - 1 - i][n - 1 - j] != target[i][j]) {
-                    ok &= ~0b0100;
-                }
-                if (mat[n - 1 - j][i] != target[i][j]) {
-                    ok &= ~0b1000;
-                }
-                if (ok == 0) {
-                    return false;
+        for (int k = 0; k < 4; k++) {
+            if (mat == target) return true;
+            int n = mat.size();
+            vector<vector<int>> nums(n, vector<int>(n));
+            for (int i = 0; i < n; i++) {
+                for (int j = 0; j < n; j++) {
+                    nums[j][n - 1 - i] = mat[i][j];
                 }
             }
+            mat = nums;
         }
-        return ok != 0;
+        return false;
     }
 };
