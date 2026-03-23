@@ -1,37 +1,29 @@
 class Solution {
 public:
     int maxProductPath(vector<vector<int>>& grid) {
-        int m = grid.size(), n = grid[0].size();
-        vector<vector<array<long long, 2>>> f(m, vector<array<long long, 2>>(n));
+        int a = grid.size(), b = grid[0].size(), val = 1000000007;
+        vector<vector<long long>> nums(a, vector<long long>(b)), nxt(a, vector<long long>(b));
+        nums[0][0] = nxt[0][0] = grid[0][0];
 
-        for (int i = 0; i < m; ++i) {
-            for (int j = 0; j < n; ++j) {
-                long long x = grid[i][j];
-                if (i == 0 && j == 0) {
-                    f[i][j] = {x, x};
-                    continue;
+        for (int i = 0; i < a; i++) {
+            for (int j = 0; j < b; j++) {
+                if (!i && !j) continue;
+                long long curr = grid[i][j];
+                long long on = LLONG_MAX, upd = LLONG_MIN;
+                if (i) {
+                    on = min(on, min(nums[i - 1][j] * curr, nxt[i - 1][j] * curr));
+                    upd = max(upd, max(nums[i - 1][j] * curr, nxt[i - 1][j] * curr));
                 }
-
-                long long mn = LLONG_MAX, mx = LLONG_MIN;
-
-                if (i > 0) {
-                    auto [a, b] = f[i - 1][j];
-                    mn = min(mn, min(a * x, b * x));
-                    mx = max(mx, max(a * x, b * x));
+                if (j) {
+                    on = min(on, min(nums[i][j - 1] * curr, nxt[i][j - 1] * curr));
+                    upd = max(upd, max(nums[i][j - 1] * curr, nxt[i][j - 1] * curr));
                 }
-
-                if (j > 0) {
-                    auto [a, b] = f[i][j - 1];
-                    mn = min(mn, min(a * x, b * x));
-                    mx = max(mx, max(a * x, b * x));
-                }
-
-                f[i][j] = {mn, mx};
+                nums[i][j] = on;
+                nxt[i][j] = upd;
             }
         }
 
-        long long ans = f[m - 1][n - 1][1];
-        const int mod = 1e9 + 7;
-        return ans < 0 ? -1 : ans % mod;
+        long long ans = nxt[a - 1][b - 1];
+        return ans < 0 ? -1 : ans % val;
     }
 };
