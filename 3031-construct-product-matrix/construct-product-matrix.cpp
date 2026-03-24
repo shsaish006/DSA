@@ -1,22 +1,21 @@
 class Solution {
 public:
     vector<vector<int>> constructProductMatrix(vector<vector<int>>& grid) {
-        const int mod = 12345;
-        int n = grid.size(), m = grid[0].size();
-        vector<vector<int>> p(n, vector<int>(m));
-        long long suf = 1;
-        for (int i = n - 1; i >= 0; --i) {
-            for (int j = m - 1; j >= 0; --j) {
-                p[i][j] = suf;
-                suf = suf * grid[i][j] % mod;
+        int a = grid.size(), b = grid[0].size(), val = 12345;
+        vector<int> nums;
+        for (int i = 0; i < a; i++) {
+            for (int j = 0; j < b; j++) nums.push_back(grid[i][j] % val);
+        }
+        int cnt = nums.size();
+        vector<int> nxt(cnt, 1), upd(cnt, 1);
+        for (int i = 1; i < cnt; i++) upd[i] = 1LL * upd[i - 1] * nums[i - 1] % val;
+        for (int i = cnt - 2; i >= 0; i--) nxt[i] = 1LL * nxt[i + 1] * nums[i + 1] % val;
+        vector<vector<int>> ans(a, vector<int>(b));
+        for (int i = 0, idx = 0; i < a; i++) {
+            for (int j = 0; j < b; j++, idx++) {
+                ans[i][j] = 1LL * upd[idx] * nxt[idx] % val;
             }
         }
-        long long pre = 1;
-        for (int i = 0; i < n; ++i) {
-            for (int j = 0; j < m; ++j) {
-                p[i][j] = p[i][j] * pre % mod;
-                pre = pre * grid[i][j] % mod;
-            }
-        }
-        return p;
-    }};
+        return ans;
+    }
+};
