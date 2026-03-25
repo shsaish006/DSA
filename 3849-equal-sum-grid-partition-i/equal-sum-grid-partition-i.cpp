@@ -1,33 +1,30 @@
 class Solution {
 public:
-    bool canPartitionGrid(vector<vector<int>>& grid) {
-        long long s = 0;
-        for (const auto& row : grid) {
-            for (int x : row) {
-                s += x;
+    bool canPartitionGrid(vector<vector<int>>& a) {
+        int n = a.size(), m = a[0].size();
+        long long s = 0, curr = 0;
+        for(int i = 0; i < n; i++){
+            for(int j = 0; j < m; j++){
+                s += a[i][j];
             }
         }
-        if (s % 2 != 0) {
-            return false;
+        if(s & 1) return false;
+
+        for(int i = 0; i < n - 1; i++){
+            for(int j = 0; j < m; j++){
+                curr += a[i][j];
+            }
+            if(curr == s - curr) return true;
         }
-        int m = grid.size(), n = grid[0].size();
-        long long pre = 0;
-        for (int i = 0; i < m; ++i) {
-            for (int x : grid[i]) {
-                pre += x;
+
+        curr = 0;
+        for(int j = 0; j < m - 1; j++){
+            for(int i = 0; i < n; i++){
+                curr += a[i][j];
             }
-            if (pre * 2 == s && i + 1 < m) {
-                return true;
-            }
+            if(curr == s - curr) return true;
         }
-        pre = 0;
-        for (int j = 0; j < n; ++j) {
-            for (int i = 0; i < m; ++i) {
-                pre += grid[i][j];
-            }
-            if (pre * 2 == s && j + 1 < n) {
-                return true;
-            }
-        }
+
         return false;
-    }};
+    }
+};
