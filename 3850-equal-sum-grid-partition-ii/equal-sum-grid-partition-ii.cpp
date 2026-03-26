@@ -1,59 +1,57 @@
 class Solution {
 public:
     bool canPartitionGrid(vector<vector<int>>& grid) {
-        return check(grid) || check(rotate(grid));
-    }
+        int a = grid.size(), b = grid[0].size();
 
-private:
-    bool check(const vector<vector<int>>& g) {
-        int m = g.size(), n = g[0].size();
-        long long s1 = 0, s2 = 0;
+        for (int on = 0; on < 2; on++) {
+            int c = on ? b : a;
+            int d = on ? a : b;
 
-        unordered_map<long long, int> cnt1, cnt2;
+            long long s = 0;
+            unordered_map<long long, int> cnt, nxt;
 
-        for (auto& row : g) {
-            for (int x : row) {
-                s2 += x;
-                cnt2[x]++;
-            }
-        }
-
-        for (int i = 0; i < m - 1; i++) {
-            for (int x : g[i]) {
-                s1 += x;
-                s2 -= x;
-                cnt1[x]++;
-                cnt2[x]--;
-            }
-
-            if (s1 == s2) return true;
-
-            if (s1 < s2) {
-                long long diff = s2 - s1;
-                if (cnt2[diff] > 0) {
-                    if (
-                        (m - i - 1 > 1 && n > 1) || (i == m - 2 && (g[i + 1][0] == diff || g[i + 1][n - 1] == diff)) || (n == 1 && (g[i + 1][0] == diff || g[m - 1][0] == diff))) return true;
+            for (int i = 0; i < c; i++) {
+                for (int j = 0; j < d; j++) {
+                    int val = on ? grid[j][i] : grid[i][j];
+                    s += val;
+                    nxt[val]++;
                 }
-            } else {
-                long long diff = s1 - s2;
-                if (cnt1[diff] > 0) {
-                    if (
-                        (i + 1 > 1 && n > 1) || (i == 0 && (g[0][0] == diff || g[0][n - 1] == diff)) || (n == 1 && (g[0][0] == diff || g[i][0] == diff))) return true;
+            }
+
+            long long curr = 0;
+
+            for (int i = 0; i < c - 1; i++) {
+                for (int j = 0; j < d; j++) {
+                    int val = on ? grid[j][i] : grid[i][j];
+                    curr += val;
+                    s -= val;
+                    cnt[val]++;
+                    nxt[val]--;
+                }
+
+                if (curr == s) return true;
+
+                if (curr < s) {
+                    long long diff = s - curr;
+                    if (nxt[diff] > 0) {
+                        if ((c - i - 1 > 1 && d > 1) ||
+                            (i == c - 2 && (((on ? grid[0][i + 1] : grid[i + 1][0]) == diff) || ((on ? grid[d - 1][i + 1] : grid[i + 1][d - 1]) == diff))) ||
+                            (d == 1 && (((on ? grid[0][i + 1] : grid[i + 1][0]) == diff) || ((on ? grid[0][c - 1] : grid[c - 1][0]) == diff)))) {
+                            return true;
+                        }
+                    }
+                } else {
+                    long long diff = curr - s;
+                    if (cnt[diff] > 0) {
+                        if ((i + 1 > 1 && d > 1) ||
+                            (i == 0 && (((on ? grid[0][0] : grid[0][0]) == diff) || ((on ? grid[d - 1][0] : grid[0][d - 1]) == diff))) ||
+                            (d == 1 && (((on ? grid[0][0] : grid[0][0]) == diff) || ((on ? grid[0][i] : grid[i][0]) == diff)))) {
+                            return true;
+                        }
+                    }
                 }
             }
         }
 
         return false;
-    }
-
-    vector<vector<int>> rotate(vector<vector<int>>& grid) {
-        int m = grid.size(), n = grid[0].size();
-        vector<vector<int>> t(n, vector<int>(m));
-        for (int i = 0; i < m; i++) {
-            for (int j = 0; j < n; j++) {
-                t[j][i] = grid[i][j];
-            }
-        }
-        return t;
-    }
-};
+    }};
