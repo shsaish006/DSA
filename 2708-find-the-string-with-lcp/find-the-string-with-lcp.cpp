@@ -1,39 +1,42 @@
 class Solution {
 public:
-    string findTheString(vector<vector<int>>& lcp) {
-        int i = 0, n = lcp.size();
-        string s(n, '\0');
-        for (char c = 'a'; c <= 'z'; ++c) {
-            while (i < n && s[i]) {
-                ++i;
+    string findTheString(vector<vector<int>>& a) {
+        int n = a.size();
+        string s(n, ' ');
+        
+        for (int i = 0, c = 0; i < n; i++) {
+            if (s[i] != ' ') {
+                continue;
             }
-            if (i == n) {
-                break;
+            if (c == 26) {
+                return "";
             }
-            for (int j = i; j < n; ++j) {
-                if (lcp[i][j]) {
-                    s[j] = c;
+            for (int j = i; j < n; j++) {
+                if (a[i][j] > 0) {
+                    s[j] = char('a' + c);
                 }
             }
+            c++;
         }
-        if (s.find('\0') != -1) {
-            return "";
-        }
-        for (i = n - 1; ~i; --i) {
-            for (int j = n - 1; ~j; --j) {
+        
+        for (int i = n - 1; i >= 0; i--) {
+            for (int j = n - 1; j >= 0; j--) {
                 if (s[i] == s[j]) {
-                    if (i == n - 1 || j == n - 1) {
-                        if (lcp[i][j] != 1) {
-                            return "";
-                        }
-                    } else if (lcp[i][j] != lcp[i + 1][j + 1] + 1) {
+                    int v = 1;
+                    if (i + 1 < n && j + 1 < n) {
+                        v += a[i + 1][j + 1];
+                    }
+                    if (a[i][j] != v) {
                         return "";
                     }
-                } else if (lcp[i][j]) {
-                    return "";
+                } else {
+                    if (a[i][j] != 0) {
+                        return "";
+                    }
                 }
             }
         }
+        
         return s;
     }
 };
