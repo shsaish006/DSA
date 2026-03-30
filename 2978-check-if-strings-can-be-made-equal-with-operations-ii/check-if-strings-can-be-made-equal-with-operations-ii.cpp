@@ -1,15 +1,18 @@
 class Solution {
 public:
     bool checkStrings(string s1, string s2) {
-        vector<vector<int>> cnt(2, vector<int>(26, 0));
-        for (int i = 0; i < s1.size(); ++i) {
-            ++cnt[i & 1][s1[i] - 'a'];
-            --cnt[i & 1][s2[i] - 'a'];
+        vector<int> a(52);
+        for (int i = 0; i < s1.size(); i += 2) {
+            a[s1[i] - 'a']++;
+            a[s2[i] - 'a']--;
         }
-        for (int i = 0; i < 26; ++i) {
-            if (cnt[0][i] || cnt[1][i]) {
-                return false;
-            }
+        for (int i = 1; i < s1.size(); i += 2) {
+            a[26 + s1[i] - 'a']++;
+            a[26 + s2[i] - 'a']--;
+        }
+        for (int i = 0; i < 52; ++i) {
+            if (a[i]) return false;
         }
         return true;
-    }};
+    }
+};
