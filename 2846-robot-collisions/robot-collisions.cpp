@@ -34,6 +34,7 @@ public:
                     ans.push_back(v[i]);
                 }
             }
+            
         }
         while(!st.empty()){
             ans.push_back(st.top());
