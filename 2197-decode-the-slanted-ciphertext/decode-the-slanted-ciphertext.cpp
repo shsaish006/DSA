@@ -1,16 +1,20 @@
 class Solution {
 public:
     string decodeCiphertext(string encodedText, int rows) {
-        string ans;
-        int cols = encodedText.size() / rows;
-        for (int j = 0; j < cols; ++j) {
-            for (int x = 0, y = j; x < rows && y < cols; ++x, ++y) {
-                ans += encodedText[x * cols + y];
+        if (encodedText.empty()) return "";
+        int a = encodedText.size();
+        int b = a / rows;
+        string s;
+        for (int i = 0; i < b; i++) {
+            int j = i;
+            while (j < a) {
+                s += encodedText[j];
+                j += b + 1;
+                if (j >= a) break;
+                if (j % b < i) break;
             }
         }
-        while (ans.size() && ans.back() == ' ') {
-            ans.pop_back();
-        }
-        return ans;
+        while (!s.empty() && s.back() == ' ') s.pop_back();
+        return s;
     }
 };
