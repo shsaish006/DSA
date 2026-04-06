@@ -1,33 +1,35 @@
 class Solution {
 public:
-    int robotSim(vector<int>& commands, vector<vector<int>>& obstacles) {
-        int dirs[5] = {0, 1, 0, -1, 0};
-        auto f = [](int x, int y) {
-            return x * 60010 + y;
-        };
-        unordered_set<int> s;
-        for (auto& e : obstacles) {
-            s.insert(f(e[0], e[1]));
+    struct H {
+        size_t operator()(const pair<int,int>& a) const {
+            return ((uint64_t)(uint32_t)a.first << 32) ^ (uint32_t)a.second;
         }
-        int ans = 0, k = 0;
-        int x = 0, y = 0;
-        for (int c : commands) {
-            if (c == -2) {
-                k = (k + 3) % 4;
-            } else if (c == -1) {
-                k = (k + 1) % 4;
+    };
+
+    int robotSim(vector<int>& commands, vector<vector<int>>& obstacles) {
+        unordered_set<pair<int,int>, H> s;
+        for (auto &a : obstacles) s.insert({a[0], a[1]});
+
+        vector<pair<int,int>> d = {{0,1},{1,0},{0,-1},{-1,0}};
+        int x = 0, y = 0, idx = 0, ans = 0;
+
+        for (int a : commands) {
+            if (a == -1) {
+                idx = (idx + 1) % 4;
+            } else if (a == -2) {
+                idx = (idx + 3) % 4;
             } else {
-                while (c--) {
-                    int nx = x + dirs[k], ny = y + dirs[k + 1];
-                    if (s.count(f(nx, ny))) {
-                        break;
-                    }
+                for (int i = 0; i < a; i++) {
+                    int nx = x + d[idx].first;
+                    int ny = y + d[idx].second;
+                    if (s.find({nx, ny}) != s.end()) break;
                     x = nx;
                     y = ny;
                     ans = max(ans, x * x + y * y);
                 }
             }
         }
+
         return ans;
     }
 };
