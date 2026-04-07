@@ -1,59 +1,33 @@
 class Robot {
 public:
-    int mx, my, p, cur;
-    bool moved;
+    int a, b, c, d;
+    bool s;
 
     Robot(int width, int height) {
-        mx = width - 1;
-        my = height - 1;
-        p = 2 * mx + 2 * my;
-        cur = 0;
-        moved = false;
+        a = width - 1;
+        b = height - 1;
+        c = 2 * (a + b);
+        d = 0;
+        s = 0;
     }
 
     void step(int num) {
-        moved = true;
-        cur = (cur + num) % p;
+        s = 1;
+        d = (d + num) % c;
     }
 
     vector<int> getPos() {
-        int d = cur;
-        int mx = this->mx, my = this->my;
-
-        if (0 <= d && d <= mx) {
-            return {d, 0};
-        }
-        if (mx < d && d <= mx + my) {
-            return {mx, d - mx};
-        }
-        if (mx + my < d && d <= 2 * mx + my) {
-            return {mx - (d - (mx + my)), my};
-        }
-        return {0, my - (d - (2 * mx + my))};
+        if (d <= a) return {d, 0};
+        if (d <= a + b) return {a, d - a};
+        if (d <= a + b + a) return {a - (d - a - b), b};
+        return {0, b - (d - a - b - a)};
     }
 
     string getDir() {
-        int d = cur;
-        int mx = this->mx, my = this->my;
-
-        if (!moved) {
-            return "East";
-        }
-        if (1 <= d && d <= mx) {
-            return "East";
-        } else if (mx < d && d <= mx + my) {
-            return "North";
-        } else if (mx + my < d && d <= 2 * mx + my) {
-            return "West";
-        }
+        if (!s) return "East";
+        if (d == 0) return "South";
+        if (d <= a) return "East";
+        if (d <= a + b) return "North";
+        if (d <= a + b + a) return "West";
         return "South";
-    }
-};
-
-/**
- * Your Robot object will be instantiated and called as such:
- * Robot* obj = new Robot(width, height);
- * obj->step(num);
- * vector<int> param_2 = obj->getPos();
- * string param_3 = obj->getDir();
- */
+    }};
