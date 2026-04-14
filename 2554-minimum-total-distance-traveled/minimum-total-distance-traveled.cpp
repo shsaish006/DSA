@@ -1,33 +1,23 @@
 class Solution {
 public:
-    long long minimumTotalDistance(vector<int>& robot, vector<vector<int>>& factory) {
-        ranges::sort(robot);
-        ranges::sort(factory);
-        using ll = long long;
-        vector<vector<ll>> f(robot.size(), vector<ll>(factory.size(), -1));
+    long long minimumTotalDistance(vector<int>& a, vector<vector<int>>& b) {
+        sort(a.begin(), a.end());
+        sort(b.begin(), b.end());
 
-        auto dfs = [&](this auto&& dfs, int i, int j) -> ll {
-            if (i == robot.size()) {
-                return 0;
-            }
-            if (j == factory.size()) {
-                return 1e15;
-            }
-            if (f[i][j] != -1) {
-                return f[i][j];
-            }
-            ll ans = dfs(i, j + 1);
-            ll t = 0;
-            for (int k = 0; k < factory[j][1]; ++k) {
-                if (i + k >= robot.size()) {
-                    break;
+        int c = a.size(), d = b.size();
+        vector<vector<long long>> dp(d + 1, vector<long long>(c + 1, 1e18));
+        for (int i = 0; i <= d; i++) dp[i][c] = 0;
+
+        for (int i = d - 1; i >= 0; i--) {
+            for (int j = c - 1; j >= 0; j--) {
+                dp[i][j] = dp[i + 1][j];
+                long long s = 0;
+                for (int k = 0; k < b[i][1] && j + k < c; k++) {
+                    s += llabs(a[j + k] - b[i][0]);
+                    dp[i][j] = min(dp[i][j], s + dp[i + 1][j + k + 1]);
                 }
-                t += abs(robot[i + k] - factory[j][0]);
-                ans = min(ans, t + dfs(i + k + 1, j + 1));
             }
-            f[i][j] = ans;
-            return ans;
-        };
-        return dfs(0, 0);
+        }
+        return dp[0][0];
     }
 };
