@@ -1,14 +1,12 @@
 class Solution {
 public:
-    int closestTarget(vector<string>& words, string target, int startIndex) {
-        int n = words.size();
-        int ans = n;
-        for (int i = 0; i < n; i++) {
-            if (words[i] == target) {
-                int t = abs(i - startIndex);
-                ans = min({ans, t, n - t});
-            }
+    int closestTarget(vector<string>& a, string b, int c) {
+        int n=a.size(),l=c,r=c;
+        for(int d=0;d<n;d++){
+            if(a[l]==b || a[r]==b) return d;
+            l=(l-1+n)%n;
+            r=(r+1)%n;
         }
-        return ans == n ? -1 : ans;
+        return -1;
     }
 };
