@@ -2,35 +2,32 @@ class Solution {
 public:
     vector<int> solveQueries(vector<int>& nums, vector<int>& queries) {
         int n = nums.size();
-        int m = n * 2;
-        vector<int> d(m, m);
-
-        unordered_map<int, int> left;
-        for (int i = 0; i < m; i++) {
-            int x = nums[i % n];
-            if (left.count(x)) {
-                d[i] = min(d[i], i - left[x]);
-            }
-            left[x] = i;
-        }
-
-        unordered_map<int, int> right;
-        for (int i = m - 1; i >= 0; i--) {
-            int x = nums[i % n];
-            if (right.count(x)) {
-                d[i] = min(d[i], right[x] - i);
-            }
-            right[x] = i;
-        }
-
+        unordered_map<int, vector<int>> a;
+        
         for (int i = 0; i < n; i++) {
-            d[i] = min(d[i], d[i + n]);
+            a[nums[i]].push_back(i);
         }
 
         vector<int> ans;
-        for (int query : queries) {
-            ans.push_back(d[query] >= n ? -1 : d[query]);
+        for (int i : queries) {
+            vector<int>& b = a[nums[i]];
+            
+            if (b.size() == 1) {
+                ans.push_back(-1);
+                continue;
+            }
+
+            int c = lower_bound(b.begin(), b.end(), i) - b.begin();
+            int d = b[(c - 1 + b.size()) % b.size()];
+            int s = b[(c + 1) % b.size()];
+
+            int o = abs(i - d);
+            o = min(o, n - o);
+
+            int on = abs(i - s);
+            on = min(on, n - on);
+
+            ans.push_back(min(o, on));
         }
         return ans;
-    }
-};
+    }};
