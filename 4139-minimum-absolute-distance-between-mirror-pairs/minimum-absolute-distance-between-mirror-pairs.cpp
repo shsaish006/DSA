@@ -1,22 +1,27 @@
 class Solution {
 public:
+    int f(int x) {
+        int y = 0;
+        while (x > 0) {
+            y = y * 10 + x % 10;
+            x /= 10;
+        }
+        return y;
+    }
+
     int minMirrorPairDistance(vector<int>& nums) {
         int n = nums.size();
         int ans = n + 1;
         unordered_map<int, int> pos;
-        auto reverse = [](int x) {
-            int y = 0;
-            for (; x > 0; x /= 10) {
-                y = y * 10 + x % 10;
+
+        for (int i = 0; i < n; i++) {
+            auto it = pos.find(nums[i]);
+            if (it != pos.end()) {
+                ans = min(ans, i - it->second);
             }
-            return y;
-        };
-        for (int i = 0; i < n; ++i) {
-            if (pos.contains(nums[i])) {
-                ans = min(ans, i - pos[nums[i]]);
-            }
-            pos[reverse(nums[i])] = i;
+            pos[f(nums[i])] = i;
         }
-        return ans > n ? -1 : ans;
+
+        return ans == n + 1 ? -1 : ans;
     }
 };
