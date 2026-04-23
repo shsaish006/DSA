@@ -1,25 +1,23 @@
 class Solution {
 public:
     vector<long long> distance(vector<int>& nums) {
-        int n = nums.size();
-        vector<long long> ans(n);
+        int a = nums.size();
+        vector<long long> ans(a);
         unordered_map<int, vector<int>> d;
-        for (int i = 0; i < n; ++i) {
-            d[nums[i]].push_back(i);
-        }
-        for (auto& [_, idx] : d) {
-            int m = idx.size();
-            long long left = 0;
-            long long right = -1LL * m * idx[0];
-            for (int i : idx) {
-                right += i;
-            }
-            for (int i = 0; i < m; ++i) {
-                ans[idx[i]] = left + right;
-                if (i + 1 < m) {
-                    left += (idx[i + 1] - idx[i]) * (i + 1);
-                    right -= (idx[i + 1] - idx[i]) * (m - i - 1);
-                }
+
+        for (int i = 0; i < a; i++) d[nums[i]].push_back(i);
+
+        for (auto &it : d) {
+            vector<int> &vals = it.second;
+            int b = vals.size();
+
+            vector<long long> temp(b + 1);
+            for (int i = 0; i < b; i++) temp[i + 1] = temp[i] + vals[i];
+
+            for (int i = 0; i < b; i++) {
+                long long left = 1LL * vals[i] * i - temp[i];
+                long long right = (temp[b] - temp[i + 1]) - 1LL * vals[i] * (b - i - 1);
+                ans[vals[i]] = left + right;
             }
         }
         return ans;
