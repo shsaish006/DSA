@@ -2,50 +2,41 @@ class Solution {
 public:
     int maxDistance(int side, vector<vector<int>>& points, int k) {
         vector<long long> nums;
-        for (auto& p : points) {
-            int x = p[0];
-            int y = p[1];
-            if (x == 0) {
-                nums.push_back((long long) y);
-            } else if (y == side) {
-                nums.push_back((long long) side + x);
-            } else if (x == side) {
-                nums.push_back((long long) side * 3 - y);
-            } else {
-                nums.push_back((long long) side * 4 - x);
-            }
-        }
-        sort(nums.begin(), nums.end());
+        long long s = 4LL * side;
 
-        auto check = [&](int lo) -> bool {
-            long long total = (long long) side * 4;
-            for (long long start : nums) {
-                long long end = start + total - lo;
-                long long cur = start;
-                bool ok = true;
-                for (int i = 0; i < k - 1; ++i) {
-                    auto it = lower_bound(nums.begin(), nums.end(), cur + lo);
-                    if (it == nums.end() || *it > end) {
-                        ok = false;
-                        break;
-                    }
-                    cur = *it;
+        for (auto &a : points) {
+            long long b = a[0], c = a[1];
+            if (b == 0) nums.push_back(c);
+            else if (c == side) nums.push_back(side + b);
+            else if (b == side) nums.push_back(3LL * side - c);
+            else nums.push_back(4LL * side - b);
+        }
+
+        sort(nums.begin(), nums.end());
+        int a = nums.size();
+
+        vector<long long> vals = nums;
+        for (int i = 0; i < a; i++) vals.push_back(nums[i] + s);
+
+        auto ok = [&](long long d) {
+            for (int i = 0; i < a; i++) {
+                int curr = i;
+                for (int j = 1; j < k; j++) {
+                    curr = lower_bound(vals.begin() + curr + 1, vals.begin() + i + a, vals[curr] + d) - vals.begin();
+                    if (curr >= i + a) break;
                 }
-                if (ok) {
-                    return true;
-                }
+                if (curr < i + a && vals[curr] - vals[i] <= s - d) return true;
             }
             return false;
         };
 
-        int l = 1, r = side;
-        while (l < r) {
-            int mid = (l + r + 1) >> 1;
-            if (check(mid)) {
-                l = mid;
-            } else {
-                r = mid - 1;
-            }
+        int b = 0, c = side;
+        while (b < c) {
+            int d = (b + c + 1) / 2;
+            if (ok(d)) b = d;
+            else c = d - 1;
         }
-        return l;
-    }};
+
+        return b;
+    }
+};
