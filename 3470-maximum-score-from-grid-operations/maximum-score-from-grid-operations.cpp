@@ -1,66 +1,73 @@
-using vll = std::vector<long long>;
+using ll = long long;
 
 class Solution {
 public:
     long long maximumScore(vector<vector<int>>& grid) {
-        int n = grid[0].size();
-        if (n == 1) {
-            return 0;
-        }
+        int a = grid.size();
 
-        vector<vector<vll>> dp(n, vector<vll>(n + 1, vll(n + 1, 0)));
-        vector<vll> prevMax(n + 1, vll(n + 1, 0));
-        vector<vll> prevSuffixMax(n + 1, vll(n + 1, 0));
-        vector<vll> colSum(n, vll(n + 1, 0));
+        vector<vector<ll>> nums(a, vector<ll>(a + 1));
 
-        for (int c = 0; c < n; c++) {
-            for (int r = 1; r <= n; r++) {
-                colSum[c][r] = colSum[c][r - 1] + grid[r - 1][c];
+        for (int i = 0; i < a; i++) {
+            for (int j = 1; j <= a; j++) {
+                nums[i][j] = nums[i][j - 1] + grid[j - 1][i];
             }
         }
 
-        for (int i = 1; i < n; i++) {
-            for (int currH = 0; currH <= n; currH++) {
-                for (int prevH = 0; prevH <= n; prevH++) {
-                    if (currH <= prevH) {
-                        long long extraScore =
-                            colSum[i][prevH] - colSum[i][currH];
-                        dp[i][currH][prevH] =
-                            std::max(dp[i][currH][prevH],
-                                     prevSuffixMax[prevH][0] + extraScore);
+        vector<vector<ll>> vals(a + 1, vector<ll>(a + 1));
+        vector<vector<ll>> nxt(a + 1, vector<ll>(a + 1));
+        vector<vector<ll>> upd(a + 1, vector<ll>(a + 1));
+
+        for (int i = 1; i < a; i++) {
+            vector<vector<ll>> on(a + 1, vector<ll>(a + 1));
+
+            for (int j = 0; j <= a; j++) {
+                for (int k = 0; k <= a; k++) {
+                    if (j <= k) {
+                        ll curr = nums[i][k] - nums[i][j];
+                        on[j][k] = upd[k][0] + curr;
                     } else {
-                        long long extraScore =
-                            colSum[i - 1][currH] - colSum[i - 1][prevH];
-                        dp[i][currH][prevH] = std::max(
-                            {dp[i][currH][prevH], prevSuffixMax[prevH][currH],
-                             prevMax[prevH][currH] + extraScore});
+                        ll curr = nums[i - 1][j] - nums[i - 1][k];
+                        on[j][k] = upd[k][j];
+                        if (vals[k][j] + curr > on[j][k])
+                            on[j][k] = vals[k][j] + curr;
                     }
                 }
             }
 
-            for (int currH = 0; currH <= n; currH++) {
-                prevMax[currH][0] = dp[i][currH][0];
-                for (int prevH = 1; prevH <= n; prevH++) {
-                    long long penalty =
-                        (prevH > currH) ? (colSum[i][prevH] - colSum[i][currH])
-                                        : 0;
-                    prevMax[currH][prevH] =
-                        std::max(prevMax[currH][prevH - 1],
-                                 dp[i][currH][prevH] - penalty);
+            for (int j = 0; j <= a; j++) {
+                vals[j][0] = on[j][0];
+
+                for (int k = 1; k <= a; k++) {
+                    ll curr = 0;
+                    if (k > j)
+                        curr = nums[i][k] - nums[i][j];
+
+                    vals[j][k] = vals[j][k - 1];
+                    if (on[j][k] - curr > vals[j][k])
+                        vals[j][k] = on[j][k] - curr;
                 }
 
-                prevSuffixMax[currH][n] = dp[i][currH][n];
-                for (int prevH = n - 1; prevH >= 0; prevH--) {
-                    prevSuffixMax[currH][prevH] = std::max(
-                        prevSuffixMax[currH][prevH + 1], dp[i][currH][prevH]);
+                upd[j][a] = on[j][a];
+
+                for (int k = a - 1; k >= 0; k--) {
+                    upd[j][k] = upd[j][k + 1];
+                    if (on[j][k] > upd[j][k])
+                        upd[j][k] = on[j][k];
                 }
             }
+
+            nxt.swap(on);
         }
 
-        long long ans = 0;
-        for (int k = 0; k <= n; k++) {
-            ans = std::max({ans, dp[n - 1][n][k], dp[n - 1][0][k]});
+        ll cnt = 0;
+
+        for (int i = 0; i <= a; i++) {
+            if (nxt[0][i] > cnt)
+                cnt = nxt[0][i];
+            if (nxt[a][i] > cnt)
+                cnt = nxt[a][i];
         }
 
-        return ans;
-    }};
+        return cnt;
+    }
+};
