@@ -1,36 +1,31 @@
 class Solution {
 public:
     int maxPathScore(vector<vector<int>>& grid, int k) {
-        int m = grid.size();
-        int n = grid[0].size();
-        int inf = 1 << 30;
-        vector f(m, vector(n, vector<int>(k + 1, -1)));
+        int m=grid.size(),n=grid[0].size();
+        vector dp(m,vector(n,vector<int>(k+1,-1e9)));
+        dp[0][0][k]=0;
 
-        auto dfs = [&](this auto&& dfs, int i, int j, int k) -> int {
-            if (i < 0 || j < 0 || k < 0) {
-                return -inf;
+        for(int sum=0;sum<m+n-1;sum++){
+            for(int i=0;i<m;i++){
+                int j=sum-i;
+                if(j<0||j>=n) continue;
+                for(int t=0;t<=k;t++){
+                    if(dp[i][j][t]<0) continue;
+                    if(i+1<m){
+                        int nt=t-(grid[i+1][j]>0);
+                        if(nt>=0)
+                            dp[i+1][j][nt]=max(dp[i+1][j][nt],dp[i][j][t]+grid[i+1][j]);
+                    }
+                    if(j+1<n){
+                        int nt=t-(grid[i][j+1]>0);
+                        if(nt>=0)
+                            dp[i][j+1][nt]=max(dp[i][j+1][nt],dp[i][j][t]+grid[i][j+1]);
+                    }
+                }
             }
-            if (i == 0 && j == 0) {
-                return 0;
-            }
-            if (f[i][j][k] != -1) {
-                return f[i][j][k];
-            }
+        }
 
-            int res = grid[i][j];
-            int nk = k;
-            if (grid[i][j] > 0) {
-                --nk;
-            }
-
-            int a = dfs(i - 1, j, nk);
-            int b = dfs(i, j - 1, nk);
-            res += max(a, b);
-
-            return f[i][j][k] = res;
-        };
-
-        int ans = dfs(m - 1, n - 1, k);
-        return ans < 0 ? -1 : ans;
+        int ans=*max_element(dp[m-1][n-1].begin(),dp[m-1][n-1].end());
+        return ans<0?-1:ans;
     }
 };
