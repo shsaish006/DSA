@@ -1,29 +1,20 @@
 class Solution {
 public:
-    vector<vector<char>> rotateTheBox(vector<vector<char>>& boxGrid) {
-        int m = boxGrid.size(), n = boxGrid[0].size();
-        vector<vector<char>> ans(n, vector<char>(m));
-        for (int i = 0; i < m; ++i) {
-            for (int j = 0; j < n; ++j) {
-                ans[j][m - i - 1] = boxGrid[i][j];
-            }
-        }
-        for (int j = 0; j < m; ++j) {
-            queue<int> q;
-            for (int i = n - 1; ~i; --i) {
-                if (ans[i][j] == '*') {
-                    queue<int> t;
-                    swap(t, q);
-                } else if (ans[i][j] == '.') {
-                    q.push(i);
-                } else if (!q.empty()) {
-                    ans[q.front()][j] = '#';
-                    q.pop();
-                    ans[i][j] = '.';
-                    q.push(i);
+    vector<vector<char>> rotateTheBox(vector<vector<char>>& nums) {
+        int a = nums.size(), b = nums[0].size();
+        vector<vector<char>> vals(b, vector<char>(a, '.'));
+
+        for (int i = 0; i < a; i++) {
+            int idx = b - 1;
+
+            for (int j = b - 1; j >= 0; j--) {
+                if (nums[i][j] == '*') {
+                    vals[j][a - 1 - i] = '*';
+                    idx = j - 1;
+                } else if (nums[i][j] == '#') {
+                    vals[idx][a - 1 - i] = '#';
+                    idx--;
                 }
             }
         }
-        return ans;
-    }
-};
+return vals; }};
