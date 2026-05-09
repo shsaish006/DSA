@@ -1,42 +1,27 @@
 class Solution {
 public:
     vector<vector<int>> rotateGrid(vector<vector<int>>& grid, int k) {
-        int m = grid.size(), n = grid[0].size();
-        auto rotate = [&](int p, int k) {
+        int a = grid.size(), b = grid[0].size();
+
+        for (int i = 0; i < min(a, b) / 2; i++) {
+            vector<pair<int,int>> vals;
             vector<int> nums;
-            for (int j = p; j < n - p - 1; ++j) {
-                nums.push_back(grid[p][j]);
+
+            for (int j = i; j < b - i - 1; j++) vals.push_back({i, j});
+            for (int j = i; j < a - i - 1; j++) vals.push_back({j, b - i - 1});
+            for (int j = b - i - 1; j > i; j--) vals.push_back({a - i - 1, j});
+            for (int j = a - i - 1; j > i; j--) vals.push_back({j, i});
+
+            for (auto &[c, d] : vals) nums.push_back(grid[c][d]);
+
+            int s = nums.size();
+
+            for (int j = 0; j < s; j++) {
+                auto [c, d] = vals[j];
+                grid[c][d] = nums[(j + k) % s];
             }
-            for (int i = p; i < m - p - 1; ++i) {
-                nums.push_back(grid[i][n - p - 1]);
-            }
-            for (int j = n - p - 1; j > p; --j) {
-                nums.push_back(grid[m - p - 1][j]);
-            }
-            for (int i = m - p - 1; i > p; --i) {
-                nums.push_back(grid[i][p]);
-            }
-            int l = nums.size();
-            k %= l;
-            if (k == 0) {
-                return;
-            }
-            for (int j = p; j < n - p - 1; ++j) {
-                grid[p][j] = nums[k++ % l];
-            }
-            for (int i = p; i < m - p - 1; ++i) {
-                grid[i][n - p - 1] = nums[k++ % l];
-            }
-            for (int j = n - p - 1; j > p; --j) {
-                grid[m - p - 1][j] = nums[k++ % l];
-            }
-            for (int i = m - p - 1; i > p; --i) {
-                grid[i][p] = nums[k++ % l];
-            }
-        };
-        for (int p = 0; p < min(m, n) / 2; ++p) {
-            rotate(p, k);
         }
+
         return grid;
     }
 };
