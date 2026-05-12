@@ -1,16 +1,17 @@
 class Solution {
 public:
-    int minimumEffort(vector<vector<int>>& tasks) {
-        sort(tasks.begin(), tasks.end(), [&](const auto& a, const auto& b) { return a[0] - a[1] < b[0] - b[1]; });
-        int ans = 0, cur = 0;
-        for (auto& task : tasks) {
-            int a = task[0], m = task[1];
-            if (cur < m) {
-                ans += m - cur;
-                cur = m;
+    int minimumEffort(vector<vector<int>>& nums) {
+        sort(nums.begin(), nums.end(), [&](auto &a, auto &b) {
+            return a[1] - a[0] > b[1] - b[0];
+        });
+        int a = 0, b = 0;
+        for (auto &c : nums) {
+            if (a < c[1]) {
+                b += c[1] - a;
+                a = c[1];
             }
-            cur -= a;
-        }
-        return ans;
+            a -= c[0];
+         }
+         return b;
     }
 };
