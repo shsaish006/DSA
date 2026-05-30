@@ -1,62 +1,103 @@
+// class Solution {
+// public:
+//     vector<bool> getResults(vector<vector<int>>& q) {
+//         set<int> s = {0, 50000};
+//         vector<bool> ans;
+
+//         for (auto &v : q) {
+//             if (v[0] == 1) {
+//                 s.insert(v[1]);
+//             } else {
+//                 int x = v[1], sz = v[2];
+
+//                 vector<int> a;
+//                 for (auto it = s.begin(); it != s.end() && *it <= x; it++) {
+//                     a.push_back(*it);
+//                 }
+
+//                 int mx = 0;
+
+//                 for (int i = 1; i < (int)a.size(); i++) {
+//                     mx = max(mx, a[i] - a[i - 1]);
+//                 }
+
+//                 if (!a.empty()) {
+//                     mx = max(mx, x - a.back());
+//                 }
+
+//                 ans.push_back(mx >= sz);
+//             }
+//         }
+//         return ans;
+//     }
+// };
 class Solution {
 public:
-    vector<int> seg;
-    void update(int idx, int val, int p, int l, int r) {
-        if (l == r) {
-            seg[p] = val;
-            return;
-        }
-        int mid = (l + r) >> 1;
-        if (idx <= mid) {
-            update(idx, val, p << 1, l, mid);
-        } else {
-            update(idx, val, p << 1 | 1, mid + 1, r);
-        }
-        seg[p] = max(seg[p << 1], seg[p << 1 | 1]);
-    }
+    vector<bool> getResults(vector<vector<int>>& q) {
+        int n = 50001;
+        int b = 225;
 
-    int query(int L, int R, int p, int l, int r) {
-        if (L <= l && r <= R) {
-            return seg[p];
-        }
-        int mid = (l + r) >> 1;
-        int res = 0;
-        if (L <= mid) {
-            res = max(res, query(L, R, p << 1, l, mid));
-        }
-        if (R > mid) {
-            res = max(res, query(L, R, p << 1 | 1, mid + 1, r));
-        }
-        return res;
-    }
+        vector<int> nums(n, 0), mx((n + b - 1) / b, 0);
 
-    vector<bool> getResults(vector<vector<int>>& queries) {
-        int mx = 50000;
-        seg.resize(mx << 2);
-        set<int> st = {0, mx};
-        update(mx, mx, 1, 0, mx);
+        auto upd = [&](int idx, int val) {
+            nums[idx] = val;
+            int id = idx / b;
+            mx[id] = 0;
+
+            int l = id * b;
+            int r = min(n - 1, l + b - 1);
+
+            for (int i = l; i <= r; i++) {
+                mx[id] = max(mx[id], nums[i]);
+            }
+        };
+
+        set<int> s = {0, 50000};
+
+        upd(50000, 50000);
+
         vector<bool> ans;
 
-        for (auto& q : queries) {
-            if (q[0] == 1) {
-                int x = q[1];
-                auto it = st.upper_bound(x);
+        for (auto &v : q) {
+            if (v[0] == 1) {
+                int x = v[1];
+
+                auto it = s.upper_bound(x);
+
                 int r = *it;
                 int l = *prev(it);
-                update(x, x - l, 1, 0, mx);
-                update(r, r - x, 1, 0, mx);
-                st.insert(x);
+
+                upd(x, x - l);
+                upd(r, r - x);
+
+                s.insert(x);
             } else {
-                int x = q[1];
-                int sz = q[2];
-                auto it = st.upper_bound(x);
-                --it;
-                int pre = *it;
-                int max_space = query(0, pre, 1, 0, mx);
-                max_space = max(max_space, x - pre);
-                ans.push_back(max_space >= sz);
+                int x = v[1];
+                int sz = v[2];
+
+                auto it = prev(s.upper_bound(x));
+                int p = *it;
+
+                int res = 0;
+
+                int L = 0, R = p;
+
+                while (L <= R) {
+                    if (L % b == 0 && L + b - 1 <= R) {
+                        res = max(res, mx[L / b]);
+                        L += b;
+                    } else {
+                        res = max(res, nums[L]);
+                        L++;
+                    }
+                }
+
+                res = max(res, x - p);
+
+                ans.push_back(res >= sz);
             }
         }
+
         return ans;
     }
 };
