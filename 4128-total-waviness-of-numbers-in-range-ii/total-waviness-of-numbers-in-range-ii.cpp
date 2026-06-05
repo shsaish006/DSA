@@ -1,50 +1,54 @@
 using ll = long long;
+
 class Solution {
-    static inline int waves[570];
-    static inline bool init = []() {
-        int j = 0;
-        for (int i = 0; i < 1000; i++) {
-            int r = i % 10;
-            int m = (i / 10) % 10;
-            int l = (i / 100) % 10;
-            if ((m > max(l, r)) | (m < min(l, r)))
-                waves[j++] = i;
-        }
-        return 0;
-    }();
-
 public:
-    ll totalWaviness(ll A, ll B) { return waveCount(B) - waveCount(A - 1); }
+    string s;
+    pair<ll,ll> dp[20][11][11][2][2];
+    bool vis[20][11][11][2][2];
 
-private:
-    ll waveCount(ll num) {
-        if (num < 100) return 0;            
-        return accumulate(begin(waves), end(waves), 0LL, [&](ll a, int p) {
-            return a + countWays(num, p);
-        });
+    pair<ll,ll> dfs(int i, int a, int b, int st, int t) {
+        if (i == s.size()) return {1, 0};
+
+        if (vis[i][a][b][st][t])
+            return dp[i][a][b][st][t];
+
+        vis[i][a][b][st][t] = 1;
+
+        ll cnt = 0, wav = 0;
+        int lim = t ? s[i] - '0' : 9;
+
+        for (int d = 0; d <= lim; d++) {
+            int nt = t && (d == lim);
+
+            if (!st && d == 0) {
+                auto p = dfs(i + 1, 10, 10, 0, nt);
+                cnt += p.first;
+                wav += p.second;
+            } else {
+                auto p = dfs(i + 1, b, d, 1, nt);
+
+                ll add = 0;
+                if (a != 10) {
+                    if ((b > a && b > d) || (b < a && b < d))
+                        add = p.first;
+                }
+
+                cnt += p.first;
+                wav += p.second + add;
+            }
+        }
+
+        return dp[i][a][b][st][t] = {cnt, wav};
     }
 
-    ll countWays(ll num, int pattern) {
-        ll t = pattern < 100;
-        ll count = 0, mult = 1;
+    ll f(ll n) {
+        if (n < 100) return 0;
+        s = to_string(n);
+        memset(vis, 0, sizeof(vis));
+        return dfs(0, 10, 10, 0, 1).second;
+    }
 
-        for (int i = 0; mult * 100 <= num; i++) {
-            ll pre = num / (mult * 1000);
-            ll cur = (num / mult) % 1000;
-            ll suf = num % mult;
-            ll ways = 0;
-
-            if (cur > pattern)
-                ways = pre - t + 1;
-            else if (cur == pattern) {
-                ways = max(0LL, pre - t);
-                count += suf + 1;
-            } else
-                ways = max(0LL, pre - t);
-            count += ways * mult;
-            mult *= 10;
-        }
-
-        return count;
+    long long totalWaviness(long long l, long long r) {
+        return f(r) - f(l - 1);
     }
 };
