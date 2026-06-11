@@ -1,39 +1,37 @@
 class Solution {
 public:
-    int assignEdgeWeights(vector<vector<int>>& edges) {
-        int n = edges.size() + 1;
-        vector<vector<int>> g(n + 1);
+    static const int mod = 1000000007;
+    vector<vector<int>> g;
 
-        for (auto& e : edges) {
-            int u = e[0];
-            int v = e[1];
-            g[u].push_back(v);
-            g[v].push_back(u);
-        }
-
-        auto dfs = [&](this auto&& dfs, int i, int fa) -> int {
-            int res = 0;
-            for (int j : g[i]) {
-                if (j != fa) {
-                    res = max(res, dfs(j, i) + 1);
-                }
-            }
-            return res;
-        };
-
-        return pow(2, dfs(1, 0) - 1, 1000000007);
-    }
-
-private:
-    long long pow(long long a, int n, int mod) {
-        long long res = 1;
-        while (n > 0) {
-            if (n & 1) {
-                res = res * a % mod;
-            }
+    long long pw(long long a, long long n) {
+        long long r = 1;
+        while (n) {
+            if (n & 1) r = r * a % mod;
             a = a * a % mod;
             n >>= 1;
         }
-        return res;
+        return r;
+    }
+
+    int dfs(int u, int p) {
+        int mx = 0;
+        for (int v : g[u]) {
+            if (v == p) continue;
+            mx = max(mx, 1 + dfs(v, u));
+        }
+        return mx;
+    }
+
+    int assignEdgeWeights(vector<vector<int>>& edges) {
+        int n = edges.size() + 1;
+        g.assign(n + 1, {});
+
+        for (auto &e : edges) {
+            g[e[0]].push_back(e[1]);
+            g[e[1]].push_back(e[0]);
+        }
+
+        int h = dfs(1, 0);
+        return pw(2, h - 1);
     }
 };
