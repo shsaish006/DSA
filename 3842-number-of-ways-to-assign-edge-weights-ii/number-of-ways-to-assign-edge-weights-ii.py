@@ -82,4 +82,3 @@ class Solution:
                 answer.append(powers_of_2[path_len - 1])
         
         return answer
-
