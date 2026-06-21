@@ -1,12 +1,13 @@
 class Solution {
 public:
-    int maxIceCream(vector<int>& costs, int coins) {
-        sort(costs.begin(), costs.end());
-        int n = costs.size();
-        for (int i = 0; i < n; ++i) {
-            if (coins < costs[i]) return i;
-            coins -= costs[i];
+    int maxIceCream(vector<int>& a, int c) {
+        sort(a.begin(), a.end());
+        int ans = 0;
+        for (int x : a) {
+            if (c < x) break;
+            c -= x;
+            ans++;
         }
-        return n;
+        return ans;
     }
 };
