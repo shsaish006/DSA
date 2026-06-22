@@ -1,12 +1,17 @@
 class Solution {
 public:
-    int maxNumberOfBalloons(string s) {
-        vector<int> f(26);
-        for(char c:s) f[c-'a']++;
-        f[11]/=2;
-        f[14]/=2;
-        return min({f[0],f[1],f[13],f[11], f[14]});
-
-        
+    int maxNumberOfBalloons(string text) {
+        int cnt[26]{};
+        for (char c : text) {
+            ++cnt[c - 'a'];
+        }
+        cnt['o' - 'a'] >>= 1;
+        cnt['l' - 'a'] >>= 1;
+        int ans = 1 << 30;
+        string t = "balon";
+        for (char c : t) {
+            ans = min(ans, cnt[c - 'a']);
+        }
+        return ans;
     }
 };
