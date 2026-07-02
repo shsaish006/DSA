@@ -1,26 +1,27 @@
 class Solution {
 public:
-    bool findSafeWalk(vector<vector<int>>& grid, int health) {
-        int m = grid.size();
-        int n = grid[0].size();
-        vector<vector<int>> dist(m, vector<int>(n, INT_MAX));
-        dist[0][0] = grid[0][0];
-        queue<pair<int, int>> q;
-        q.emplace(0, 0);
-        int dirs[5] = {-1, 0, 1, 0, -1};
-        while (!q.empty()) {
-            auto [x, y] = q.front();
-            q.pop();
-            for (int i = 0; i < 4; ++i) {
-                int nx = x + dirs[i];
-                int ny = y + dirs[i + 1];
-                
-                if (nx >= 0 && nx < m && ny >= 0 && ny < n && dist[nx][ny] > dist[x][y] + grid[nx][ny]) {
-                    dist[nx][ny] = dist[x][y] + grid[nx][ny];
-                    q.emplace(nx, ny);
+    bool findSafeWalk(vector<vector<int>>& a, int h) {
+        int m = a.size(), n = a[0].size();
+        deque<pair<int,int>> q;
+        vector<vector<int>> d(m, vector<int>(n, 1e9));
+        int dx[] = {-1,1,0,0}, dy[] = {0,0,-1,1};
+
+        d[0][0] = a[0][0];
+        q.push_front({0,0});
+        while(!q.empty()) {
+            auto [x,y] = q.front();
+            q.pop_front();
+            for(int i=0;i<4;i++) {
+                int nx = x + dx[i], ny = y + dy[i];
+                if(nx<0||ny<0||nx>=m||ny>=n) continue;
+                int w = d[x][y] + a[nx][ny];
+                if(w < d[nx][ny]) {
+                    d[nx][ny] = w;
+                    if(a[nx][ny]) q.push_back({nx,ny});
+                    else q.push_front({nx,ny});
                 }
             }
         }
-        return dist[m - 1][n - 1] < health;
+        return d[m-1][n-1] < h;
     }
 };
