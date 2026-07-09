@@ -1,14 +1,20 @@
 class Solution {
 public:
-//  nums= a
-//  maxDiff =d
-//  queries = q
-    vector<bool> pathExistenceQueries(int n, vector<int>& a, int d, vector<vector<int>>& q) {
+    vector<bool> pathExistenceQueries(int n, vector<int>& nums, int maxDiff, vector<vector<int>>& queries) {
         vector<int> g(n);
-        for(int i=1, c=0; i<n;i++) g[i]=c+=a[i]- a[i-1]>d;
+        int cnt = 0;
+        for (int i = 1; i < n; ++i) {
+            if (nums[i] - nums[i - 1] > maxDiff) {
+                ++cnt;
+            }
+            g[i] = cnt;
+        }
+
         vector<bool> ans;
-        for(auto &i:q) ans.push_back(g[i[0]]==g[i[1]]);
+        for (const auto& q : queries) {
+            int u = q[0], v = q[1];
+            ans.push_back(g[u] == g[v]);
+        }
         return ans;
-        
     }
 };
