@@ -1,33 +1,21 @@
 class Solution {
 public:
-    int countCompleteComponents(int n, vector<vector<int>>& edges) {
+    int countCompleteComponents(int n, vector<vector<int>>& e) {
         vector<vector<int>> g(n);
-        bool vis[n];
-        memset(vis, false, sizeof(vis));
-        for (auto& e : edges) {
-            int a = e[0], b = e[1];
-            g[a].push_back(b);
-            g[b].push_back(a);
-        }
-        function<pair<int, int>(int)> dfs = [&](int i) -> pair<int, int> {
-            vis[i] = true;
-            int x = 1, y = g[i].size();
-            for (int j : g[i]) {
-                if (!vis[j]) {
-                    auto [a, b] = dfs(j);
-                    x += a;
-                    y += b;
-                }
-            }
-            return make_pair(x, y);
+        for (auto &i : e) g[i[0]].push_back(i[1]), g[i[1]].push_back(i[0]);
+        vector<int> vis(n);
+        auto dfs = [&](auto &&self, int i, int &v, int &d) -> void {
+            vis[i] = 1;
+            v++;
+            d += g[i].size();
+            for (int j : g[i]) if (!vis[j]) self(self, j, v, d);
         };
         int ans = 0;
-        for (int i = 0; i < n; ++i) {
+        for (int i = 0; i < n; i++) {
             if (!vis[i]) {
-                auto [a, b] = dfs(i);
-                if (a * (a - 1) == b) {
-                    ++ans;
-                }
+                int v = 0, d = 0;
+                dfs(dfs, i, v, d);
+                ans += v * (v - 1) == d;
             }
         }
         return ans;
