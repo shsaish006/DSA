@@ -1,27 +1,23 @@
 class Solution {
 public:
-    vector<int> gcdValues(vector<int>& nums, vector<long long>& queries) {
-        int mx = ranges::max(nums);
-        vector<int> cnt(mx + 1);
-        vector<long long> cntG(mx + 1);
-        for (int x : nums) {
-            ++cnt[x];
-        }
-        for (int i = mx; i; --i) {
-            long long v = 0;
-            for (int j = i; j <= mx; j += i) {
-                v += cnt[j];
-                cntG[i] -= cntG[j];
+    vector<int> gcdValues(vector<int>& a, vector<long long>& b) {
+        int n = *max_element(a.begin(), a.end());
+        vector<int> c(n + 1);
+        vector<long long> d(n + 1);
+        for (int x : a) c[x]++;
+        for (int i = n; i; i--) {
+            long long s = 0;
+            for (int j = i; j <= n; j += i) {
+                s += c[j];
+                d[i] -= d[j];
             }
-            cntG[i] += 1LL * v * (v - 1) / 2;
+            d[i] += s * (s - 1) / 2;
         }
-        for (int i = 2; i <= mx; ++i) {
-            cntG[i] += cntG[i - 1];
-        }
+        partial_sum(d.begin(), d.end(), d.begin());
         vector<int> ans;
-        for (auto&& q : queries) {
-            ans.push_back(upper_bound(cntG.begin(), cntG.end(), q) - cntG.begin());
-        }
+        for (auto x : b)
+            ans.push_back(upper_bound(d.begin(), d.end(), x) - d.begin());
+
         return ans;
     }
 };
