@@ -1,28 +1,18 @@
 class Solution {
 public:
     string smallestSubsequence(string s) {
-        int n = s.size();
-        int last[26] = {0};
-        for (int i = 0; i < n; ++i) {
-            last[s[i] - 'a'] = i;
-        }
-
-        string ans;
-        int mask = 0;
-        for (int i = 0; i < n; ++i) {
-            char c = s[i];
-            if ((mask >> (c - 'a')) & 1) {
-                continue;
+        int a[26]={},b=0;
+        for(int i=0;i<s.size();i++) a[s[i]-'a']=i;
+        string c;
+        for(int i=0;i<s.size();i++){
+            if(b>>s[i]-'a'&1) continue;
+            while(c.size()&&c.back()>s[i]&&a[c.back()-'a']>i){
+                b^=1<<(c.back()-'a');
+                c.pop_back();
             }
-            while (!ans.empty() && ans.back() > c && last[ans.back() - 'a'] > i) {
-                mask ^= 1 << (ans.back() - 'a');
-                ans.pop_back();
-            }
-
-            ans.push_back(c);
-            mask |= 1 << (c - 'a');
+            c+=s[i];
+            b|=1<<(s[i]-'a');
         }
-        
-        return ans;
+        return c;
     }
 };
