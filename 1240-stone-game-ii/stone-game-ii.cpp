@@ -1,25 +1,27 @@
 class Solution {
 public:
-//  piles=a 
-    int stoneGameII(vector<int>& a) {
-        int n=a.size();
-        vector<int> s(n+1);
-        for(int i=n-1;i>=0;i--) s[i]=s[i+1]+ a[i];
-        vector<vector<int>> dp(n+1, vector<int> (n+1));
-        for(int i=n-1;i>=0;i--)
-        for(int m=n;m>=1;m--){
-        if(i+2*m>=n) dp[i][m]=s[i];
-        else 
-            for(int x=1;x<=2*m;x++)
-            dp[i][m]= max(dp[i][m], s[i]-dp[i+x][max(m,x)]);
-    }
-    return dp[0][1];
-
-        
+    int stoneGameII(vector<int>& piles) {
+        int n = piles.size();
+        int s[n + 1];
+        s[0] = 0;
+        for (int i = 0; i < n; ++i) {
+            s[i + 1] = s[i] + piles[i];
+        }
+        int f[n][n + 1];
+        memset(f, 0, sizeof f);
+        function<int(int, int)> dfs = [&](int i, int m) -> int {
+            if (m * 2 >= n - i) {
+                return s[n] - s[i];
+            }
+            if (f[i][m]) {
+                return f[i][m];
+            }
+            int res = 0;
+            for (int x = 1; x <= m << 1; ++x) {
+                res = max(res, s[n] - s[i] - dfs(i + x, max(x, m)));
+            }
+            return f[i][m] = res;
+        };
+        return dfs(0, 1);
     }
 };
-// player hardum piles collect karenge front se
-//  M can only same or increase
-//  a larger m matlab jyada piles
-//  optimally har move best hoga dono ka 
-//  1<= X<=2*M  evry posiible choice hoga 
