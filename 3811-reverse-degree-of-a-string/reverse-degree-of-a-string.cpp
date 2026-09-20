@@ -1,13 +1,12 @@
 class Solution {
 public:
     int reverseDegree(string s) {
-        int ans=0;
-        for(int i=0;i<s.length();i++){
-            int a=i+1;
-            int b='z'-s[i]+1;
-            ans+=a*b;
+        int n = s.length();
+        int ans = 0;
+        for (int i = 1; i <= n; ++i) {
+            int x = 26 - (s[i - 1] - 'a');
+            ans += i * x;
         }
         return ans;
-        
     }
 };
